@@ -1,0 +1,2890 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f9fafb">
+<meta name="description" content="App didattica interattiva sulle funzioni: definizione, iniettività, suriettività, biiettività, composizione e funzione inversa. Teoria, simulazioni grafiche e quiz di autovalutazione.">
+<title>Funzioni · Matematica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&display=swap" rel="stylesheet">
+<script>
+(function(){
+  var t=localStorage.getItem('theme');
+  if(t==='dark'||(t===null&&matchMedia('(prefers-color-scheme:dark)').matches)){
+    document.documentElement.setAttribute('data-theme','dark');
+    var m=document.querySelector('meta[name="theme-color"]');
+    if(m)m.setAttribute('content','#111827');
+  }
+}());
+</script>
+<style>
+/* ===================== Design system ===================== */
+:root{
+  --color-primary:#2563eb;      /* Blu scientifico */
+  --color-secondary:#1e40af;
+  --color-accent:#f59e0b;       /* Arancio per highlight */
+  --color-success:#1d70bf;      /* Verde */
+  --color-error:#d97706;        /* Rosso */
+  --color-bg:#f9fafb;
+  --color-text:#1f2937;
+  --surface:#ffffff;
+  --border:#e5e7eb;
+  --muted:#6b7280;
+  --primary-soft:#eff6ff;
+  --accent-soft:#fef3c7;
+  --accent-deep:#b45309;
+  --success-soft:#e7f0fa;
+  --success-deep:#12467e;
+  --error-soft:#fde4c8;
+  --error-deep:#b45309;
+  --radius:12px;
+  --shadow:0 1px 3px rgba(17,24,39,.07);
+  --font-math:"Cambria Math","STIX Two Math","Times New Roman",serif;
+  --font-head:"Fraunces",Georgia,"Times New Roman",serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--color-bg);color:var(--color-text);
+  font-family:"Inter","Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,"Helvetica Neue",Arial,sans-serif;
+  font-size:clamp(15px,2.3vw,16.5px);line-height:1.6;
+  -webkit-font-smoothing:antialiased}
+:focus-visible{outline:3px solid rgba(37,99,235,.45);outline-offset:2px}
+
+/* ===================== Header ===================== */
+header{background:var(--surface);border-bottom:1px solid var(--border);
+  padding:.85rem 1rem .8rem}
+header .wrap{max-width:1000px;margin:0 auto;display:flex;align-items:baseline;
+  justify-content:space-between;gap:.8rem;flex-wrap:wrap}
+header h1{font-family:var(--font-head);font-size:clamp(1.12rem,3.8vw,1.45rem);font-weight:800;
+  letter-spacing:-.02em;color:var(--color-text)}
+header .sub{color:var(--muted);font-size:.82em;font-weight:500}
+
+/* ===================== Nav ===================== */
+nav.main{background:var(--surface);border-bottom:1px solid var(--border);
+  position:static;overflow-x:auto;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+nav.main .wrap{max-width:1000px;margin:0 auto;display:flex;gap:.4rem;padding:.55rem 1rem}
+nav.main button{flex:0 0 auto;background:var(--color-bg);border:1px solid var(--border);
+  border-radius:999px;padding:.42rem .95rem;font-size:.85em;color:var(--muted);
+  cursor:pointer;white-space:nowrap;font-family:inherit;font-weight:600;min-height:36px;
+  transition:background .15s,border-color .15s,color .15s}
+nav.main button:hover:not(.active){background:var(--primary-soft);
+  border-color:var(--color-primary);color:var(--color-secondary)}
+nav.main button.active{background:var(--color-primary);border-color:var(--color-primary);color:#fff}
+
+/* ===================== Layout ===================== */
+main{padding:1.2rem 1rem 2.6rem;max-width:1000px;margin:0 auto}
+section.scene{display:none}
+section.scene.active{display:block;animation:fadein .25s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.page-head{margin:.2rem 0 1rem;border-left:4px solid var(--color-primary);padding-left:.75rem}
+.page-head h2{font-family:var(--font-head);font-size:clamp(1.18rem,3.6vw,1.5rem);font-weight:800;letter-spacing:-.015em}
+.page-head .lead{margin-top:.15rem}
+.sec-label{font-size:.72em;font-weight:700;letter-spacing:.1em;color:var(--muted);
+  text-transform:uppercase;margin:1.3rem 0 .45rem}
+.lead{color:var(--muted);font-size:.92em}
+
+/* ===================== Card ===================== */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1.15rem 1.25rem;margin-bottom:1.1rem;box-shadow:var(--shadow)}
+.card>h2{font-family:var(--font-head);font-size:1.13em;font-weight:700;letter-spacing:-.01em;margin-bottom:.45rem}
+.card h3{font-family:var(--font-head);color:var(--color-secondary);font-size:.97em;font-weight:700;margin:.9rem 0 .3rem}
+.card p{margin:.35rem 0}
+.card ul,.card ol{margin:.4rem 0 .4rem 1.3rem}
+.card li{margin:.22rem 0}
+.card li::marker{color:var(--color-primary);font-weight:700}
+
+/* ===================== Accordion ===================== */
+.accordion details{border:1px solid var(--border);border-radius:10px;
+  margin-bottom:.55rem;background:var(--surface);overflow:hidden}
+.accordion details[open]{border-color:#c7d6f5}
+.accordion summary{list-style:none;display:flex;align-items:center;justify-content:space-between;
+  gap:.7rem;padding:.72rem 1rem;cursor:pointer;font-weight:650;font-size:.96em;
+  transition:background .15s,color .15s}
+.accordion summary::-webkit-details-marker{display:none}
+.accordion summary:hover{background:var(--primary-soft);color:var(--color-secondary)}
+.accordion summary::after{content:"";flex:0 0 auto;width:9px;height:9px;
+  border-right:2.2px solid var(--muted);border-bottom:2.2px solid var(--muted);
+  transform:rotate(45deg) translate(-1px,-1px);transition:transform .25s}
+.accordion details[open] summary::after{transform:rotate(-135deg) translate(-2px,-2px)}
+.acc-body{padding:.3rem 1rem .95rem;border-top:1px solid var(--border)}
+.acc-body>p:first-child{margin-top:.55rem}
+
+/* ===================== Formule e note ===================== */
+.formula{background:var(--primary-soft);border-left:3px solid var(--color-primary);
+  padding:.55rem .9rem;margin:.55rem 0;border-radius:0 8px 8px 0;
+  font-family:var(--font-math);font-size:1.08em;line-height:1.95;overflow-x:auto}
+.formula.center{text-align:center}
+.formula.big{font-size:1.22em}
+.formula .why{display:block;font-family:"Inter","Roboto",system-ui,sans-serif;
+  font-size:.72em;color:var(--muted);line-height:1.45;margin-top:-.2rem}
+.note-ok{background:var(--success-soft);border-left:3px solid var(--color-success);
+  color:#12467e;padding:.5rem .9rem;margin:.55rem 0;border-radius:0 8px 8px 0;font-size:.9em}
+.note-warn{background:var(--accent-soft);border-left:3px solid var(--color-accent);
+  color:#78350f;padding:.5rem .9rem;margin:.55rem 0;border-radius:0 8px 8px 0;font-size:.9em}
+.note-err{background:var(--error-soft);border-left:3px solid var(--color-error);
+  color:#7a4713;padding:.5rem .9rem;margin:.55rem 0;border-radius:0 8px 8px 0;font-size:.9em}
+.sol-box{background:var(--success-soft);border:1px solid #9cc3ec;border-radius:10px;
+  padding:.7rem 1rem;margin:.6rem 0;font-size:1em}
+.sol-box .t{font-size:.72em;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--success-deep);display:block;margin-bottom:.15rem}
+
+/* ===================== Tabelle ===================== */
+.tbl-wrap{overflow-x:auto;margin:.6rem 0}
+table.tbl{border-collapse:collapse;width:100%;font-size:.88em;min-width:430px}
+.tbl th{background:var(--primary-soft);color:var(--color-secondary);text-align:left;
+  padding:.45rem .65rem;border-bottom:2px solid var(--color-primary);font-weight:700}
+.tbl td{padding:.45rem .65rem;border-bottom:1px solid var(--border);vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl .m{font-family:var(--font-math)}
+.sl-tbls{display:flex;gap:.9rem;flex-wrap:wrap;margin:.45rem 0 .1rem}
+.val-tbl{border-collapse:collapse;font-family:var(--font-math);font-size:.92em}
+.val-tbl caption{caption-side:top;font-family:"Inter","Roboto",system-ui,sans-serif;
+  font-size:.72em;font-weight:700;color:var(--muted);letter-spacing:.04em;
+  text-align:left;margin-bottom:.25rem}
+.val-tbl th{background:var(--primary-soft);color:var(--color-secondary);font-weight:700;
+  padding:.3rem .55rem;border:1px solid var(--border)}
+.val-tbl td{padding:.3rem .6rem;border:1px solid var(--border);text-align:center;min-width:2.7em}
+.cdot{display:inline-block;width:.66em;height:.66em;border-radius:2px;margin-right:.34em}
+
+/* ===================== Bottoni ===================== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;
+  border-radius:8px;padding:.5rem 1.05rem;font-family:inherit;font-size:.88em;
+  font-weight:600;cursor:pointer;border:1px solid transparent;
+  transition:background .15s,border-color .15s,color .15s,box-shadow .15s,transform .1s}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:var(--color-primary);color:#fff}
+.btn-primary:hover:not(:disabled){background:var(--color-secondary);box-shadow:0 2px 8px rgba(37,99,235,.3)}
+.btn-ghost{background:var(--surface);border-color:var(--border);color:var(--color-secondary)}
+.btn-ghost:hover:not(:disabled){background:var(--primary-soft);border-color:var(--color-primary)}
+.btn-accent{background:var(--color-accent);color:#fff}
+.btn-accent:hover:not(:disabled){background:#d97706}
+.btn-row{display:flex;flex-wrap:wrap;gap:.45rem;margin:.45rem 0}
+
+/* ===================== Campi input ===================== */
+input[type=text],input[type=number],select{font-family:inherit;font-size:.92em;
+  padding:.5rem .65rem;border:1px solid var(--border);border-radius:8px;
+  background:var(--surface);color:var(--color-text);width:100%;min-height:40px}
+input[type=text]:focus,input[type=number]:focus,select:focus{outline:none;
+  border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(37,99,235,.18)}
+.field label,.coef label{display:block;font-size:.78em;font-weight:600;color:var(--muted);
+  margin-bottom:.22rem}
+.field .err-msg{display:none;color:var(--color-error);font-size:.8em;font-weight:500;margin-top:.3rem}
+.field.invalid .err-msg{display:block}
+.field.invalid input{border-color:var(--color-error);box-shadow:0 0 0 3px rgba(217,119,6,.16)}
+.coef-grid{display:flex;flex-wrap:wrap;gap:.55rem;margin:.4rem 0 .6rem}
+.coef{width:5.4em;flex:0 1 auto}
+.coef.wide{width:8.5em}
+.coef input.bad{border-color:var(--color-error);box-shadow:0 0 0 3px rgba(217,119,6,.16)}
+.coef-err{color:var(--color-error);font-size:.8em;font-weight:500;margin:.1rem 0 .3rem;display:none}
+.coef-err.show{display:block}
+input[type=range]{accent-color:var(--color-primary);min-height:26px}
+.ctrl{display:grid;gap:.5rem;margin:.2rem 0 .7rem}
+.ctrl label{display:flex;align-items:center;gap:.6rem;font-size:.89em}
+.ctrl label .nm{color:var(--muted);min-width:2.2em;font-weight:600}
+.ctrl label input[type=range]{flex:1;min-width:0}
+.ctrl label .v{min-width:3.2em;text-align:right;font-weight:700;color:var(--color-secondary);
+  font-variant-numeric:tabular-nums}
+
+/* ===================== Simulazioni ===================== */
+.sim-layout{display:grid;grid-template-columns:1.08fr 1fr;gap:1.15rem;align-items:start;margin-top:.6rem}
+@media(max-width:740px){.sim-layout{grid-template-columns:1fr}}
+.sim-pane,.ctrl-pane{min-width:0}
+canvas.plot{width:100%;height:auto;display:block;border:1px solid var(--border);
+  border-radius:10px;background:#fff}
+svg.bil{width:100%;height:auto;display:block;border:1px solid var(--border);
+  border-radius:10px;background:#fff}
+.legend{display:flex;flex-wrap:wrap;gap:.35rem;margin:.5rem 0 0;font-size:.76em}
+.legend span{display:inline-flex;align-items:center;gap:.32rem;background:var(--color-bg);
+  padding:.18rem .55rem;border-radius:999px;border:1px solid var(--border);color:var(--muted)}
+.legend i{display:inline-block;width:13px;height:5px;border-radius:3px}
+.read{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:.45rem;margin:.55rem 0;font-size:.87em}
+.read .it{background:var(--color-bg);padding:.42rem .6rem;border-radius:8px;border:1px solid var(--border)}
+.read .it .l{color:var(--muted);font-size:.76em;display:block;margin-bottom:.1rem;font-weight:600}
+.read .it .v{font-weight:700;font-variant-numeric:tabular-nums}
+.case-banner{padding:.55rem .9rem;border-radius:8px;font-weight:600;font-size:.9em;
+  border:1px solid;margin:.55rem 0}
+.case-banner.c2{background:var(--success-soft);border-color:#9cc3ec;color:var(--success-deep)}
+.case-banner.c1{background:var(--accent-soft);border-color:#fde68a;color:var(--accent-deep)}
+.case-banner.c0{background:var(--color-bg);border-color:var(--border);color:var(--muted)}
+.case-banner.cn{background:var(--primary-soft);border-color:#bfdbfe;color:var(--color-secondary)}
+.eq-display{font-family:var(--font-math);font-size:1.3em;text-align:center;
+  background:var(--primary-soft);border:1px solid #bfdbfe;border-radius:10px;
+  padding:.5rem .8rem;margin-bottom:.6rem;overflow-x:auto;white-space:nowrap}
+.hint{color:var(--muted);font-size:.82em;margin:.4rem 0}
+
+/* ===================== Passi risolutivi ===================== */
+ol.steps{list-style:none;margin:.6rem 0;counter-reset:st;padding:0}
+ol.steps li{counter-increment:st;position:relative;padding:.3rem 0 .3rem 2.15rem;margin:0;
+  border-bottom:1px dashed var(--border)}
+ol.steps li:last-child{border-bottom:none}
+ol.steps li::before{content:counter(st);position:absolute;left:0;top:.42rem;
+  width:1.5rem;height:1.5rem;border-radius:50%;background:var(--primary-soft);
+  color:var(--color-secondary);font-weight:700;font-size:.76em;
+  display:flex;align-items:center;justify-content:center}
+.step-note{font-size:.82em;color:var(--muted)}
+.eqline{font-family:var(--font-math);font-size:1.06em;line-height:1.9;overflow-x:auto}
+.badge{display:inline-block;border-radius:999px;padding:.05rem .55rem;font-size:.7em;
+  font-weight:700;vertical-align:middle;margin-left:.35rem;letter-spacing:.02em}
+.badge.b1{background:var(--primary-soft);color:var(--color-secondary)}
+.badge.b2{background:var(--accent-soft);color:var(--accent-deep)}
+
+/* ===================== Matematica inline ===================== */
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;
+  line-height:1.12;margin:0 .1em;font-size:.92em}
+.frac .nu{padding:0 .28em}
+.frac .de{border-top:1.5px solid currentColor;padding:0 .28em}
+.sq{white-space:nowrap}
+.sq .sq-i{border-top:1.6px solid currentColor;padding:0 .18em 0 .08em}
+/* ========== Sec-tabs (navigazione 4 pannelli) ========== */
+.sec-tabs{display:flex;gap:.35rem;margin:1.1rem 0 .5rem;flex-wrap:wrap}
+.sec-tab{flex:1;min-width:6rem;padding:.55rem .9rem;border:none;border-radius:8px;
+  font-size:.88em;font-weight:600;cursor:pointer;transition:background .18s,color .18s;
+  background:var(--border);color:var(--muted)}
+.sec-tab.active{background:var(--color-primary);color:#fff}
+.sec-tab:hover:not(.active){background:#d1d5db}
+[data-theme=dark] .sec-tab:hover:not(.active){background:#374151}
+.sec-panel[hidden]{display:none}
+
+/* ========== Quiz migliorato (back + riepilogo errori) ========== */
+.quiz-nav{display:flex;gap:.5rem;margin-top:.7rem}
+.quiz-nav .btn-back{background:var(--border);color:var(--color-text);border:none;
+  border-radius:8px;padding:.45rem .9rem;font-size:.88em;cursor:pointer}
+.quiz-nav .btn-back:disabled{opacity:.4;cursor:default}
+.quiz-errors{margin-top:.9rem}
+.quiz-errors .err-item{margin:.5rem 0;padding:.6rem .9rem;border-radius:8px;
+  background:var(--error-soft);border-left:3px solid var(--error-deep);font-size:.88em}
+.quiz-errors .err-item .err-q{font-weight:600;margin-bottom:.25rem;color:var(--color-text)}
+.quiz-errors .err-item .err-exp{color:var(--muted)}
+.quiz-err-hd{font-weight:700;color:var(--error-deep);margin-top:.8rem .0 .3rem}
+.quiz-teoria-link{display:inline-block;margin-top:.5rem;font-size:.85em;
+  color:var(--color-primary);cursor:pointer;text-decoration:underline}
+
+.det{display:inline-grid;grid-template-columns:auto auto;gap:.05em .7em;
+  border-left:1.6px solid currentColor;border-right:1.6px solid currentColor;
+  padding:.12em .45em;margin:0 .15em;vertical-align:middle;text-align:center;line-height:1.3}
+
+/* ===================== Striscia dei segni ===================== */
+.sign-strip{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;
+  margin:.55rem 0;text-align:center;font-size:.86em}
+.sign-strip .col{flex:1;min-width:0;display:flex;flex-direction:column}
+.sign-strip .col+.col{border-left:1px solid var(--border)}
+.sign-strip .v{font-size:.75em;color:var(--muted);padding:.18rem .2rem;background:var(--color-bg);
+  border-bottom:1px solid var(--border);font-family:var(--font-math);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.sign-strip .s{padding:.25rem .2rem;font-weight:800}
+.sign-strip .s.pos{background:var(--success-soft);color:var(--success-deep)}
+.sign-strip .s.neg{background:var(--error-soft);color:var(--error-deep)}
+.sign-strip .s.zero{background:var(--color-bg);color:var(--muted)}
+.strip-title{font-size:.78em;font-weight:700;color:var(--muted);margin:.6rem 0 0}
+
+/* ===================== Tabs ===================== */
+.tabs{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.85rem}
+.tab{background:var(--color-bg);border:1px solid var(--border);border-radius:999px;
+  padding:.4rem .95rem;font-family:inherit;font-size:.85em;font-weight:600;
+  color:var(--muted);cursor:pointer;transition:background .15s,border-color .15s,color .15s}
+.tab:hover:not(.active){background:var(--primary-soft);border-color:var(--color-primary);
+  color:var(--color-secondary)}
+.tab.active{background:var(--color-primary);border-color:var(--color-primary);color:#fff}
+
+/* ===================== Quiz ===================== */
+.quiz-hd{display:flex;justify-content:space-between;align-items:center;gap:.6rem;
+  margin-bottom:.45rem;font-size:.84em;color:var(--muted);font-weight:600}
+.quiz-hd .score{color:var(--color-secondary)}
+.quiz-bar{background:#e5e7eb;border-radius:999px;height:6px;margin-bottom:.95rem;overflow:hidden}
+.quiz-bar i{display:block;background:var(--color-primary);height:100%;border-radius:999px;
+  transition:width .4s cubic-bezier(.4,0,.2,1)}
+.quiz-q{font-weight:650;margin:.2rem 0 .8rem;line-height:1.5;font-size:.97em}
+.quiz-opts{display:grid;gap:.4rem;margin-bottom:.5rem}
+.quiz-btn{background:var(--color-bg);border:1.5px solid var(--border);border-radius:8px;
+  padding:.52rem .9rem;text-align:left;cursor:pointer;font-size:.89em;font-family:inherit;
+  color:var(--color-text);line-height:1.4;transition:background .12s,border-color .12s}
+.quiz-btn:not(:disabled):hover{background:var(--primary-soft);border-color:var(--color-primary)}
+.quiz-btn:disabled{cursor:default}
+.quiz-btn.correct{background:var(--success-soft)!important;border-color:var(--color-success)!important;
+  color:#12467e;font-weight:650}
+.quiz-btn.wrong{background:var(--error-soft)!important;border-color:var(--color-error)!important;
+  color:var(--error-deep)}
+.quiz-exp{padding:.55rem .9rem;border-radius:8px;font-size:.86em;line-height:1.5;margin:.5rem 0}
+.quiz-exp.ok{background:var(--success-soft);border-left:3px solid var(--color-success);color:#12467e}
+.quiz-exp.no{background:var(--error-soft);border-left:3px solid var(--color-error);color:#7a4713}
+.quiz-end{text-align:center;padding:1.2rem .6rem}
+.quiz-end .big{font-size:2rem;font-weight:800;color:var(--color-secondary);
+  font-variant-numeric:tabular-nums}
+.quiz-end p{margin:.4rem 0 .9rem;color:var(--muted)}
+
+/* ===================== Home ===================== */
+.home-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:.8rem;margin:.6rem 0}
+.home-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:1rem 1.05rem;cursor:pointer;text-align:left;font-family:inherit;font-size:1em;
+  color:inherit;box-shadow:var(--shadow);
+  transition:border-color .18s,box-shadow .18s,transform .14s}
+.home-card:hover{border-color:var(--color-primary);box-shadow:0 5px 16px rgba(37,99,235,.14);
+  transform:translateY(-2px)}
+.home-card .ico{display:block;width:46px;height:46px;margin-bottom:.5rem;color:var(--color-primary)}
+.home-card strong{display:block;color:var(--color-secondary);font-size:.99em;margin-bottom:.15rem}
+.home-card span{display:block;color:var(--muted);font-size:.84em;line-height:1.45}
+.chips{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.6rem}
+.chips em{font-style:normal;background:var(--primary-soft);color:var(--color-secondary);
+  border-radius:999px;padding:.12rem .6rem;font-size:.72em;font-weight:700}
+
+/* ===================== Footer ===================== */
+footer{border-top:1px solid var(--border);background:var(--surface);
+  padding:1.1rem 1rem;text-align:center;color:var(--muted);font-size:.8em}
+
+/* ===================== Bilancia ===================== */
+.bil .beam-g{transition:transform .75s cubic-bezier(.3,1.4,.45,1)}
+.bil .pan{transition:transform .75s cubic-bezier(.3,1.4,.45,1)}
+.bil .item{transition:opacity .42s,transform .42s}
+.bil .item.out{opacity:0;transform:translateY(-12px) scale(.35)}
+@media(max-width:480px){
+  .card{padding:.95rem .9rem}
+  .coef{width:4.6em}
+}
+
+/* ===================== Equazioni letterali ===================== */
+@keyframes coeff-pulse{
+  0%,100%{background:var(--accent-soft);color:var(--accent-deep);box-shadow:none}
+  50%{background:var(--color-accent);color:#fff;box-shadow:0 0 0 3px rgba(245,158,11,.35)}
+}
+.coeff-blink{
+  display:inline-block;
+  animation:coeff-pulse 1s ease-in-out infinite;
+  border-radius:5px;
+  padding:.08em .35em;
+  font-weight:700;
+  font-family:var(--font-math);
+  cursor:default;
+}
+.coeff-zero{
+  animation:none;
+  background:var(--error-soft);
+  color:var(--error-deep);
+  border-radius:5px;
+  padding:.08em .35em;
+  font-weight:700;
+  font-family:var(--font-math);
+}
+.lit-case{border-radius:10px;padding:.65rem 1rem;margin:.6rem 0;font-size:.94em;font-weight:600}
+.lit-case.det{background:var(--success-soft);border:1px solid #9cc3ec;color:var(--success-deep)}
+.lit-case.ind{background:var(--primary-soft);border:1px solid #bfdbfe;color:var(--color-secondary)}
+.lit-case.imp{background:var(--error-soft);border:1px solid #e7b98a;color:var(--error-deep)}
+.lit-eq-display{font-family:var(--font-math);font-size:1.12em;line-height:2.1;margin:.4rem 0}
+.lit-step{border-left:3px solid var(--border);padding:.3rem .7rem .3rem .75rem;
+  margin:.3rem 0;font-size:.92em;color:var(--color-text);font-family:var(--font-math)}
+.lit-step+.lit-step{border-color:var(--color-primary)}
+
+/* ===================== Pulsante tema ===================== */
+.theme-btn{background:none;border:1px solid var(--border);border-radius:8px;
+  padding:.42rem .5rem;cursor:pointer;color:var(--muted);line-height:0;
+  transition:background .15s,border-color .15s,color .15s;flex:0 0 auto}
+.theme-btn:hover{background:var(--primary-soft);border-color:var(--color-primary);
+  color:var(--color-secondary)}
+.theme-btn svg{width:18px;height:18px;display:block}
+.theme-btn .ico-sun{display:none}
+.theme-btn .ico-moon{display:block}
+[data-theme="dark"] .theme-btn .ico-sun{display:block}
+[data-theme="dark"] .theme-btn .ico-moon{display:none}
+
+/* ===================== Dark mode ===================== */
+[data-theme="dark"]{
+  --color-primary:#60a5fa;
+  --color-secondary:#93c5fd;
+  --color-accent:#fbbf24;
+  --color-success:#5fa0e6;
+  --color-error:#e0975a;
+  --color-bg:#111827;
+  --color-text:#f3f4f6;
+  --surface:#1f2937;
+  --border:#374151;
+  --muted:#9ca3af;
+  --primary-soft:#172554;
+  --accent-soft:#451a03;
+  --accent-deep:#fbbf24;
+  --success-soft:#15273a;
+  --success-deep:#9cc3ec;
+  --error-soft:#3a2a12;
+  --error-deep:#e0975a;
+  --shadow:0 1px 3px rgba(0,0,0,.5);
+}
+/* testi hardcoded che non usano variabili */
+[data-theme="dark"] .note-ok{color:#9cc3ec}
+[data-theme="dark"] .note-warn{color:#fde68a}
+[data-theme="dark"] .note-err{color:#e7b98a}
+[data-theme="dark"] .quiz-exp.ok{color:#9cc3ec}
+[data-theme="dark"] .quiz-exp.no{color:#e7b98a}
+[data-theme="dark"] .quiz-btn.correct{color:#9cc3ec}
+[data-theme="dark"] .accordion details[open]{border-color:#2d4a7a}
+/* inversione canvas: bianco→nero, tratti scuri→chiari, colori preservati */
+[data-theme="dark"] canvas.plot{filter:invert(1) hue-rotate(180deg)}
+[data-theme="dark"] svg.bil{filter:invert(1) hue-rotate(180deg)}
+
+/* ===================== Estensioni: funzioni ===================== */
+svg.diagram{width:100%;height:auto;display:block;border:1px solid var(--border);
+  border-radius:10px;background:#fff}
+[data-theme="dark"] svg.diagram{filter:invert(1) hue-rotate(180deg)}
+.pt-q{font-weight:650;margin:.4rem 0 .7rem;font-size:1.02em;line-height:1.5}
+.pt-opts{display:flex;flex-wrap:wrap;gap:.5rem;margin:.3rem 0 .4rem}
+.pt-fb{margin-top:.5rem}
+.chain{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;font-family:var(--font-math);
+  font-size:1.08em;margin:.6rem 0;justify-content:center}
+.chain .box{background:var(--primary-soft);border:1px solid #bfdbfe;border-radius:8px;
+  padding:.4rem .7rem;font-weight:700;min-width:3em;text-align:center;color:var(--color-secondary)}
+.chain .box.g{background:var(--accent-soft);border-color:#fde68a;color:var(--accent-deep)}
+.chain .box.x{background:var(--color-bg);border-color:var(--border);color:var(--color-text)}
+.chain .arr{color:var(--muted);font-weight:700;font-size:1.1em}
+.mini-legend{display:flex;flex-wrap:wrap;gap:.4rem 1rem;margin:.4rem 0 0;font-size:.82em;color:var(--muted)}
+.defbox{background:var(--primary-soft);border:1px solid #bfdbfe;border-radius:10px;
+  padding:.7rem 1rem;margin:.6rem 0;color:var(--color-text)}
+.defbox .t{font-size:.72em;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--color-secondary);display:block;margin-bottom:.25rem}
+.timeline{list-style:none;margin:.4rem 0 .2rem;padding:0;position:relative}
+.timeline li{position:relative;padding:.1rem 0 .9rem 1.5rem;border-left:2px solid var(--border)}
+.timeline li:last-child{border-left-color:transparent}
+.timeline li::before{content:"";position:absolute;left:-7px;top:.35rem;width:12px;height:12px;
+  border-radius:50%;background:var(--color-primary);border:2px solid var(--surface)}
+.timeline .yr{font-weight:700;color:var(--color-secondary);font-family:var(--font-math);margin-right:.4rem}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Funzioni</h1>
+    <span class="sub">Matematica · Relazioni e funzioni</span>
+    <button id="themeToggle" class="theme-btn" aria-label="Attiva tema scuro" title="Attiva tema scuro / chiaro">
+      <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+      <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<nav class="main" aria-label="Sezioni">
+  <div class="wrap" id="mainNav">
+    <button data-target="home" class="active">Home</button>
+    <button data-target="storia">Nota storica</button>
+    <button data-target="fdef">Che cos’è una funzione</button>
+    <button data-target="iniet">Iniettività</button>
+    <button data-target="suriet">Suriettività</button>
+    <button data-target="biiet">Biiettività</button>
+    <button data-target="comp">Composizione</button>
+    <button data-target="inv">Funzione inversa</button>
+    <button data-target="ripasso">Quiz riepilogativo</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============================================================ HOME ============================================================ -->
+<section class="scene active" id="home">
+  <div class="card">
+    <h2>Un percorso interattivo sulle funzioni</h2>
+    <p>Dalla definizione di funzione fino alla funzione inversa, passando per le proprietà
+       fondamentali (<strong>iniettività</strong>, <strong>suriettività</strong>,
+       <strong>biiettività</strong>) e per la <strong>composizione</strong>. Ogni sotto-sezione
+       è organizzata in quattro momenti: <strong>Teoria</strong> essenziale in schede
+       richiudibili, una <strong>Simulazione</strong> grafica da esplorare, la palestra
+       <strong>«Prova tu»</strong> con esercizi guidati e interattivi, e un <strong>Quiz</strong>
+       di sezione di 10 domande con correzione e spiegazione immediate.</p>
+    <div class="chips"><em>Teoria</em><em>Simulazioni grafiche</em><em>Prova tu</em><em>80 domande con feedback</em><em>Tema chiaro / scuro</em><em>Funziona da mobile</em></div>
+  </div>
+
+  <div class="home-grid">
+    <button class="home-card" data-target="storia">
+      <svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 6h26l6 6v30H8z"/><path d="M34 6v6h6"/>
+        <path d="M14 20h18M14 27h18M14 34h12"/>
+      </svg>
+      <strong>Nota storica</strong>
+      <span>Come è nato e si è evoluto il concetto di funzione: da Oresme e Descartes fino a Dirichlet e Bourbaki.</span>
+    </button>
+    <button class="home-card" data-target="fdef">
+      <svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="13" cy="16" r="2.6" fill="currentColor" stroke="none"/>
+        <circle cx="13" cy="32" r="2.6" fill="currentColor" stroke="none"/>
+        <circle cx="35" cy="14" r="2.6" fill="#f59e0b" stroke="none"/>
+        <circle cx="35" cy="24" r="2.6" fill="#f59e0b" stroke="none"/>
+        <circle cx="35" cy="34" r="2.6" fill="#f59e0b" stroke="none"/>
+        <path d="M15.3 15.3 32.7 14.2M15.3 31.4 32.7 24.6"/>
+      </svg>
+      <strong>Che cos’è una funzione</strong>
+      <span>Dominio, codominio e immagine; grafici; il test della retta verticale per riconoscere una funzione.</span>
+    </button>
+    <button class="home-card" data-target="iniet">
+      <svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 40 Q24 40 24 24 Q24 8 42 8"/>
+        <path d="M6 24h36" stroke="#f59e0b" stroke-dasharray="4 4"/>
+        <circle cx="24" cy="24" r="2.6" fill="#2563eb" stroke="none"/>
+      </svg>
+      <strong>Iniettività</strong>
+      <span>Elementi distinti → immagini distinte. Il test della retta orizzontale sul grafico.</span>
+    </button>
+    <button class="home-card" data-target="suriet">
+      <svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 40 10 10"/><path d="M6 24h36" opacity=".35"/>
+        <path d="M8 24 L40 24" stroke="#f59e0b" stroke-width="5" opacity=".5"/>
+        <path d="M10 10 Q24 46 40 12"/>
+      </svg>
+      <strong>Suriettività</strong>
+      <span>Ogni elemento del codominio è immagine di almeno un elemento: immagine = codominio.</span>
+    </button>
+    <button class="home-card" data-target="biiet">
+      <svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="13" cy="14" r="2.3" fill="currentColor" stroke="none"/>
+        <circle cx="13" cy="24" r="2.3" fill="currentColor" stroke="none"/>
+        <circle cx="13" cy="34" r="2.3" fill="currentColor" stroke="none"/>
+        <circle cx="35" cy="14" r="2.3" fill="#f59e0b" stroke="none"/>
+        <circle cx="35" cy="24" r="2.3" fill="#f59e0b" stroke="none"/>
+        <circle cx="35" cy="34" r="2.3" fill="#f59e0b" stroke="none"/>
+        <path d="M15 14h18M15 24h18M15 34h18"/>
+      </svg>
+      <strong>Biiettività</strong>
+      <span>Corrispondenza biunivoca: iniettiva e suriettiva insieme. La condizione per invertire.</span>
+    </button>
+    <button class="home-card" data-target="comp">
+      <svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="6" y="16" width="14" height="16" rx="3"/>
+        <rect x="28" y="16" width="14" height="16" rx="3" stroke="#f59e0b"/>
+        <path d="M20 24h8"/><path d="M2 24h4M42 24h4"/>
+      </svg>
+      <strong>Composizione</strong>
+      <span>Applicare due funzioni in catena: g∘f e f∘g. L’ordine conta.</span>
+    </button>
+    <button class="home-card" data-target="inv">
+      <svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 42 42 6" stroke="#f59e0b" stroke-dasharray="4 4"/>
+        <path d="M8 40 Q14 14 40 10"/>
+        <path d="M40 8 Q14 14 10 40" opacity=".5"/>
+      </svg>
+      <strong>Funzione inversa</strong>
+      <span>«Tornare indietro»: esiste solo per funzioni biiettive. Simmetria rispetto alla retta y = x.</span>
+    </button>
+    <button class="home-card" data-target="ripasso">
+      <svg class="ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M24 6a18 18 0 1 1-12.7 5.3"/><path d="M11 6v7h7"/>
+        <path d="M24 15v9l6 4"/>
+      </svg>
+      <strong>Quiz riepilogativo</strong>
+      <span>20 domande che attraversano tutti gli argomenti per verificare la preparazione complessiva.</span>
+    </button>
+  </div>
+
+  <div class="card">
+    <h2>Come usare l’app</h2>
+    <ol>
+      <li><strong>Leggi la teoria.</strong> Apri le schede una alla volta: definizioni, formule ed esempi svolti.</li>
+      <li><strong>Esplora la simulazione.</strong> Muovi i cursori, scegli i casi e trascina le rette di test: il grafico e i risultati si aggiornano in tempo reale.</li>
+      <li><strong>Mettiti alla prova.</strong> Nella scheda «Prova tu» risolvi esercizi guidati e classifica nuovi esempi generati di volta in volta.</li>
+      <li><strong>Verifica con il quiz.</strong> 10 domande per sezione, con correzione e spiegazione immediate, e un quiz riepilogativo finale di 20 domande.</li>
+    </ol>
+    <p class="hint">Suggerimento: parti dalla «Nota storica» per inquadrare l’argomento, poi affronta le sezioni nell’ordine proposto.</p>
+  </div>
+</section>
+
+<!-- ============================================================ NOTA STORICA ============================================================ -->
+<section class="scene" id="storia">
+  <div class="page-head">
+    <h2>Nota storica: la nascita del concetto di funzione</h2>
+    <p class="lead">Una delle idee più potenti della matematica non è nata già pronta: si è
+       formata lentamente, nell’arco di molti secoli, prima come intuizione geometrica e fisica,
+       poi come definizione rigorosa.</p>
+  </div>
+
+  <div class="card">
+    <div class="accordion">
+      <details open>
+        <summary>Dalle origini all’idea di «quantità variabile»</summary>
+        <div class="acc-body">
+          <p>Già nell’antichità babilonese ed ellenistica si usavano <strong>tavole</strong> che
+             associavano a un valore (un angolo, un giorno) un altro valore (una corda, una posizione
+             di un pianeta): erano funzioni «tabulate» senza che esistesse ancora la parola.</p>
+          <p>Nel Trecento <strong>Nicola Oresme</strong> rappresentò graficamente come una grandezza
+             («latitudo») vari al variare di un’altra («longitudo»), anticipando l’idea di grafico.
+             Con la <strong>geometria analitica</strong> di <strong>Cartesio</strong> (René Descartes)
+             e <strong>Fermat</strong> (1637) curve ed equazioni diventano due facce della stessa cosa:
+             una relazione tra $x$ e $y$ si può disegnare nel piano.</p>
+          <div class="note-ok">L’intuizione di fondo — <em>a ogni valore di una variabile ne corrisponde
+             un altro</em> — è più antica della sua definizione precisa.</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Leibniz, i Bernoulli ed Eulero: nasce la parola «funzione»</summary>
+        <div class="acc-body">
+          <p>Il termine latino <em>functio</em> è introdotto da <strong>Gottfried Leibniz</strong>
+             intorno al 1673 per indicare grandezze geometriche che «dipendono» da un punto su una curva.
+             <strong>Johann Bernoulli</strong> (1718) dà una prima definizione esplicita: una funzione di
+             una variabile è «una quantità composta in qualunque modo da quella variabile e da costanti».</p>
+          <p>È <strong>Leonhard Euler</strong> a diffondere, nel 1748, la notazione moderna
+             $f(x)$ e a pensare la funzione come un’<strong>espressione analitica</strong>
+             (una formula). Questa visione, utilissima in fisica, lasciava però fuori molte
+             corrispondenze perfettamente sensate ma non esprimibili con una singola formula.</p>
+          <div class="formula center">$f(x)$ &nbsp;—&nbsp; la scrittura introdotta da Euler (1748)</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Dirichlet e la definizione moderna</summary>
+        <div class="acc-body">
+          <p>Lo studio delle serie e dei fenomeni discontinui (Fourier) mostrò che la definizione
+             «funzione = formula» era troppo stretta. Nel 1837 <strong>Peter Gustav Lejeune Dirichlet</strong>
+             propose l’idea che usiamo ancora oggi: una funzione da $A$ a $B$ è una
+             <strong>legge di corrispondenza qualsiasi</strong> che a <em>ogni</em> elemento di $A$
+             associa <em>uno e un solo</em> elemento di $B$, senza bisogno che esista una formula.</p>
+          <p>Il celebre esempio è la «funzione di Dirichlet», che vale $1$ sui razionali e $0$ sugli
+             irrazionali: nessuna formula elementare, eppure è una funzione a tutti gli effetti.</p>
+          <div class="defbox"><span class="t">Definizione moderna</span>
+             Una funzione $f:A\to B$ associa a ogni elemento di $A$ uno e un solo elemento di $B$.</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Il linguaggio degli insiemi: Bourbaki</summary>
+        <div class="acc-body">
+          <p>Con la teoria degli insiemi (Cantor) e la sua sistemazione del Novecento (il gruppo
+             <strong>Bourbaki</strong>), la funzione viene definita in modo puramente insiemistico come
+             un particolare <strong>insieme di coppie ordinate</strong> (un sottoinsieme del prodotto
+             cartesiano $A\times B$) in cui ogni primo elemento compare una volta sola.</p>
+          <p>È in questo quadro che diventano centrali le proprietà che studierai in questa app —
+             <strong>iniettività</strong>, <strong>suriettività</strong>, <strong>biiettività</strong> —
+             e le operazioni di <strong>composizione</strong> e di <strong>inversione</strong>, oggi
+             strumenti di base in tutta la matematica e nelle sue applicazioni.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Linea del tempo</summary>
+        <div class="acc-body">
+          <ul class="timeline">
+            <li><span class="yr">~1350</span> Oresme rappresenta graficamente grandezze variabili.</li>
+            <li><span class="yr">1637</span> Descartes e Fermat: geometria analitica, curve ed equazioni.</li>
+            <li><span class="yr">~1673</span> Leibniz introduce il termine <em>functio</em>.</li>
+            <li><span class="yr">1718</span> Johann Bernoulli: prima definizione esplicita di funzione.</li>
+            <li><span class="yr">1748</span> Euler diffonde la notazione $f(x)$.</li>
+            <li><span class="yr">1837</span> Dirichlet: la funzione come corrispondenza qualsiasi.</li>
+            <li><span class="yr">XX sec.</span> Cantor e Bourbaki: definizione insiemistica con le coppie ordinate.</li>
+          </ul>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ CHE COS'È UNA FUNZIONE ============================================================ -->
+<section class="scene" id="fdef">
+  <div class="page-head">
+    <h2>Che cos’è una funzione</h2>
+    <p class="lead">Dominio, codominio e immagine; il grafico nel piano cartesiano; il test della
+       retta verticale per distinguere una funzione da una relazione qualsiasi.</p>
+  </div>
+
+  <nav class="sec-tabs" role="tablist" aria-label="Sezioni">
+    <button class="sec-tab active" data-sectab="teoria" role="tab" aria-selected="true">Teoria</button>
+    <button class="sec-tab" data-sectab="sim" role="tab" aria-selected="false">Simulazione</button>
+    <button class="sec-tab" data-sectab="esercizi" role="tab" aria-selected="false">Prova tu</button>
+    <button class="sec-tab" data-sectab="quiz" role="tab" aria-selected="false">Quiz</button>
+  </nav>
+
+  <div class="sec-panel" data-sectab="teoria">
+    <div class="card"><div class="accordion">
+      <details open>
+        <summary>Definizione di funzione</summary>
+        <div class="acc-body">
+          <p>Dati due insiemi $A$ e $B$, una <strong>funzione</strong> $f$ da $A$ a $B$ è una legge che
+             a <strong>ogni</strong> elemento di $A$ associa <strong>uno e un solo</strong> elemento di $B$.
+             Si scrive:</p>
+          <div class="formula center">$f:A\to B,\qquad x\mapsto f(x)$</div>
+          <ul>
+            <li>$A$ è il <strong>dominio</strong>: l’insieme di partenza, dove la funzione è definita;</li>
+            <li>$B$ è il <strong>codominio</strong>: l’insieme di arrivo;</li>
+            <li>$x$ è la <strong>variabile indipendente</strong>, $y=f(x)$ la <strong>variabile dipendente</strong>;</li>
+            <li>$f(x)$ è l’<strong>immagine</strong> di $x$; $x$ è una <strong>controimmagine</strong> di $f(x)$.</li>
+          </ul>
+          <div class="defbox"><span class="t">Le due condizioni chiave</span>
+             Perché $f$ sia una funzione: <strong>(1)</strong> ogni $x\in A$ deve avere un’immagine
+             (<em>esistenza</em>); <strong>(2)</strong> questa immagine deve essere <em>unica</em>.</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Immagine di una funzione</summary>
+        <div class="acc-body">
+          <p>L’<strong>immagine</strong> (o insieme immagine) $\operatorname{Im}(f)$ è il
+             sottoinsieme del codominio formato dai valori effettivamente «raggiunti»:</p>
+          <div class="formula center">$\operatorname{Im}(f)=\{\,f(x)\;:\;x\in A\,\}\subseteq B$</div>
+          <p>Attenzione a non confondere <strong>codominio</strong> (l’insieme di arrivo che
+             <em>scegliamo</em>) e <strong>immagine</strong> (ciò che la funzione <em>produce</em>
+             davvero). Può essere $\operatorname{Im}(f)\subsetneq B$.</p>
+          <div class="note-ok">Esempio: per $f:\mathbb{R}\to\mathbb{R},\ f(x)=x^2$ il codominio è $\mathbb{R}$
+             ma l’immagine è solo $[0,+\infty)$.</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Il grafico di una funzione</summary>
+        <div class="acc-body">
+          <p>Per una funzione reale di variabile reale, il <strong>grafico</strong> è l’insieme dei punti
+             del piano cartesiano le cui coordinate sono $\big(x,\,f(x)\big)$:</p>
+          <div class="formula center">$G_f=\{\,(x,\,f(x))\;:\;x\in A\,\}$</div>
+          <p>A ogni $x$ del dominio corrisponde un solo punto del grafico con quella ascissa.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Il test della retta verticale</summary>
+        <div class="acc-body">
+          <p>Una curva nel piano è il grafico di una funzione (di $x$) <strong>se e solo se</strong>
+             ogni retta <strong>verticale</strong> $x=k$ la incontra <strong>al più in un punto</strong>.</p>
+          <ul>
+            <li>uno o nessun punto di intersezione per ogni verticale → <strong>è una funzione</strong>;</li>
+            <li>esiste una verticale che la taglia in <strong>due o più punti</strong> → <strong>non è una funzione</strong>
+                (a quell’$x$ corrisponderebbero più valori).</li>
+          </ul>
+          <div class="note-warn">La circonferenza $x^2+y^2=r^2$ non è il grafico di una funzione: la
+             verticale per il centro la taglia in due punti.</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Esempio svolto</summary>
+        <div class="acc-body">
+          <p>Sia $f:\{1,2,3\}\to\{a,b,c,d\}$ data da $f(1)=b,\ f(2)=a,\ f(3)=b$.</p>
+          <ol class="steps">
+            <li>Ogni elemento del dominio ha un’immagine: <strong>è una funzione</strong> (le due condizioni sono rispettate).</li>
+            <li>Dominio $=\{1,2,3\}$, codominio $=\{a,b,c,d\}$.</li>
+            <li>Immagine $=\{a,b\}$: i valori $c$ e $d$ non sono raggiunti.</li>
+            <li>Controimmagini di $b$: sia $1$ sia $3$ (due controimmagini).</li>
+          </ol>
+          <div class="sol-box"><span class="t">In sintesi</span><span class="eqline">$\operatorname{Im}(f)=\{a,b\}\subsetneq B$</span></div>
+        </div>
+      </details>
+    </div></div>
+  </div>
+
+  <div class="sec-panel" data-sectab="sim" hidden>
+    <div class="card">
+      <h2>Test della retta verticale</h2>
+      <p class="lead">Scegli una curva e trascina il cursore per muovere la retta verticale $x=k$:
+         conta i punti di intersezione. Se qualche verticale ne incontra più di uno, la curva
+         <strong>non</strong> è il grafico di una funzione.</p>
+      <div class="sim-layout">
+        <div class="sim-pane">
+          <canvas class="plot" id="vlPlot" role="img" aria-label="Curva con retta verticale di test"></canvas>
+          <div class="legend">
+            <span><i style="background:#2563eb"></i> curva / relazione</span>
+            <span><i style="background:#f59e0b"></i> retta verticale x = k</span>
+            <span><i style="background:#1d70bf"></i> intersezioni</span>
+          </div>
+        </div>
+        <div class="ctrl-pane">
+          <div class="field">
+            <label for="vlSel">Relazione da esaminare</label>
+            <select id="vlSel">
+              <option value="line">Retta: y = x/2 + 1</option>
+              <option value="parab">Parabola: y = x² − 3</option>
+              <option value="cubic">Cubica: y = x³/6</option>
+              <option value="circle">Circonferenza: x² + y² = 36</option>
+              <option value="sidep">Parabola «sdraiata»: x = y² − 4</option>
+            </select>
+          </div>
+          <div class="ctrl">
+            <label><span class="nm">k</span><input type="range" id="vlX" min="-7" max="7" step="0.1" value="1.5"><span class="v" id="vlXv">1,5</span></label>
+          </div>
+          <div class="case-banner cn" id="vlVerdict">—</div>
+          <div class="read" id="vlInfo"></div>
+          <p class="hint">Il verdetto considera <em>tutte</em> le rette verticali, non solo quella mostrata.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Diagramma a frecce</h2>
+      <p class="lead">Rappresentazione «a insiemi»: dal dominio (a sinistra) partono frecce verso il
+         codominio (a destra). È una funzione solo se da <strong>ogni</strong> elemento di sinistra
+         parte <strong>esattamente una</strong> freccia.</p>
+      <div class="sim-layout">
+        <div class="sim-pane">
+          <svg class="diagram" id="adFun" viewBox="0 0 460 280" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Diagramma a frecce"></svg>
+        </div>
+        <div class="ctrl-pane">
+          <div class="btn-row"><button class="btn btn-primary" id="adFunNew">Nuovo esempio</button></div>
+          <div class="case-banner cn" id="adFunV">—</div>
+          <p class="hint" id="adFunWhy"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-panel" data-sectab="esercizi" hidden>
+    <div class="card">
+      <h2>Prova tu — È una funzione?</h2>
+      <p class="lead">Esamina l’esempio (diagramma a frecce, grafico o insieme di punti) e decidi se
+         definisce una funzione. Ricevi subito correzione e spiegazione.</p>
+      <div class="pt" data-pt="fdef">
+        <svg class="diagram" hidden></svg>
+        <canvas class="plot" hidden></canvas>
+        <p class="pt-q"></p>
+        <div class="pt-opts"></div>
+        <div class="pt-fb"></div>
+        <div class="btn-row"><button class="btn btn-ghost pt-new">Nuovo esercizio</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Esercizi guidati</h2>
+      <div class="accordion">
+        <details>
+          <summary><span>Esercizio 1 · Dominio naturale di $f(x)=\dfrac{1}{x-2}$</span></summary>
+          <div class="acc-body">
+            <ol class="steps">
+              <li>La frazione esiste se il denominatore non è nullo: $x-2\neq 0$.</li>
+              <li>Quindi $x\neq 2$.</li>
+            </ol>
+            <div class="sol-box"><span class="t">Dominio</span><span class="eqline">$D=\mathbb{R}\setminus\{2\}$</span></div>
+          </div>
+        </details>
+        <details>
+          <summary><span>Esercizio 2 · Immagine di $f:\{-1,0,1,2\}\to\mathbb{Z},\ f(x)=x^2$</span></summary>
+          <div class="acc-body">
+            <ol class="steps">
+              <li>Calcolo le immagini: $f(-1)=1,\ f(0)=0,\ f(1)=1,\ f(2)=4$.</li>
+              <li>Raccolgo i valori ottenuti, senza ripetizioni.</li>
+            </ol>
+            <div class="sol-box"><span class="t">Immagine</span><span class="eqline">$\operatorname{Im}(f)=\{0,1,4\}$</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-panel" data-sectab="quiz" hidden>
+    <div class="card">
+      <h2>Quiz di sezione — Che cos’è una funzione</h2>
+      <p class="lead">10 domande, una alla volta, con correzione immediata.</p>
+      <div class="quiz" data-quiz="fdef"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ INIETTIVITÀ ============================================================ -->
+<section class="scene" id="iniet">
+  <div class="page-head">
+    <h2>Funzioni iniettive</h2>
+    <p class="lead">Elementi distinti del dominio hanno immagini distinte. Sul grafico: il test della
+       retta orizzontale.</p>
+  </div>
+
+  <nav class="sec-tabs" role="tablist" aria-label="Sezioni">
+    <button class="sec-tab active" data-sectab="teoria" role="tab" aria-selected="true">Teoria</button>
+    <button class="sec-tab" data-sectab="sim" role="tab" aria-selected="false">Simulazione</button>
+    <button class="sec-tab" data-sectab="esercizi" role="tab" aria-selected="false">Prova tu</button>
+    <button class="sec-tab" data-sectab="quiz" role="tab" aria-selected="false">Quiz</button>
+  </nav>
+
+  <div class="sec-panel" data-sectab="teoria">
+    <div class="card"><div class="accordion">
+      <details open>
+        <summary>Definizione di funzione iniettiva</summary>
+        <div class="acc-body">
+          <p>Una funzione $f:A\to B$ è <strong>iniettiva</strong> (o «uno-a-uno») se a elementi
+             <strong>distinti</strong> del dominio corrispondono immagini <strong>distinte</strong>:</p>
+          <div class="formula center">$x_1\neq x_2\ \Rightarrow\ f(x_1)\neq f(x_2)$</div>
+          <p>Equivalentemente (forma più comoda nelle verifiche), per contronominale:</p>
+          <div class="formula center">$f(x_1)=f(x_2)\ \Rightarrow\ x_1=x_2$</div>
+          <div class="defbox"><span class="t">In parole</span>
+             Nessun valore del codominio viene «colpito» da più di un elemento del dominio.</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Il test della retta orizzontale</summary>
+        <div class="acc-body">
+          <p>Il grafico di $f$ rappresenta una funzione iniettiva <strong>se e solo se</strong> ogni
+             retta <strong>orizzontale</strong> $y=k$ incontra il grafico <strong>al più in un punto</strong>.</p>
+          <ul>
+            <li>ogni orizzontale taglia il grafico al più una volta → <strong>iniettiva</strong>;</li>
+            <li>esiste un’orizzontale che lo taglia in due o più punti → <strong>non iniettiva</strong>
+                (quei punti hanno la stessa immagine $k$).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Monotonia e iniettività</summary>
+        <div class="acc-body">
+          <p>Una funzione <strong>strettamente monotòna</strong> (sempre crescente oppure sempre
+             decrescente) è sempre <strong>iniettiva</strong>: se cresce (o decresce) senza mai
+             tornare indietro, non può assumere due volte lo stesso valore.</p>
+          <div class="note-ok">$f(x)=2x+1$ (crescente) e $f(x)=x^3$ (crescente) sono iniettive su $\mathbb{R}$.</div>
+          <div class="note-warn">$f(x)=x^2$ su $\mathbb{R}$ <strong>non</strong> è iniettiva: $f(-2)=f(2)=4$.
+             Lo diventa se si restringe il dominio, ad esempio a $[0,+\infty)$.</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Esempio svolto · verifica algebrica</summary>
+        <div class="acc-body">
+          <p>Verifichiamo che $f(x)=3x-5$ è iniettiva usando la forma contronominale.</p>
+          <ol class="steps">
+            <li>Suppongo $f(x_1)=f(x_2)$: &nbsp;$3x_1-5=3x_2-5$.</li>
+            <li>Sommo $5$: &nbsp;$3x_1=3x_2$.</li>
+            <li>Divido per $3$: &nbsp;$x_1=x_2$.</li>
+            <li>Da $f(x_1)=f(x_2)$ segue $x_1=x_2$: la funzione è <strong>iniettiva</strong>.</li>
+          </ol>
+          <div class="sol-box"><span class="t">Conclusione</span><span class="eqline">$f(x)=3x-5$ è iniettiva su $\mathbb{R}$</span></div>
+        </div>
+      </details>
+    </div></div>
+  </div>
+
+  <div class="sec-panel" data-sectab="sim" hidden>
+    <div class="card">
+      <h2>Test della retta orizzontale</h2>
+      <p class="lead">Scegli una funzione e muovi la retta orizzontale $y=k$: se esiste un livello che
+         la taglia in due o più punti, la funzione <strong>non</strong> è iniettiva.</p>
+      <div class="sim-layout">
+        <div class="sim-pane">
+          <canvas class="plot" id="hlPlot" role="img" aria-label="Grafico con retta orizzontale di test"></canvas>
+          <div class="legend">
+            <span><i style="background:#2563eb"></i> y = f(x)</span>
+            <span><i style="background:#f59e0b"></i> retta orizzontale y = k</span>
+            <span><i style="background:#1d70bf"></i> intersezioni</span>
+          </div>
+        </div>
+        <div class="ctrl-pane">
+          <div class="field">
+            <label for="hlSel">Funzione</label>
+            <select id="hlSel">
+              <option value="line">y = x/2 + 1 (lineare)</option>
+              <option value="cubic">y = x³/6 (cubica)</option>
+              <option value="parab">y = x² − 3 (parabola)</option>
+              <option value="abs">y = |x| − 2 (valore assoluto)</option>
+              <option value="sin">y = 3·sin(x)</option>
+            </select>
+          </div>
+          <div class="ctrl">
+            <label><span class="nm">k</span><input type="range" id="hlY" min="-7" max="7" step="0.1" value="2"><span class="v" id="hlYv">2</span></label>
+          </div>
+          <div class="case-banner cn" id="hlVerdict">—</div>
+          <div class="read" id="hlInfo"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Diagramma a frecce</h2>
+      <p class="lead">È iniettiva se in <strong>nessun</strong> elemento del codominio arrivano due o più frecce.</p>
+      <div class="sim-layout">
+        <div class="sim-pane">
+          <svg class="diagram" id="adInj" viewBox="0 0 460 280" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Diagramma a frecce"></svg>
+        </div>
+        <div class="ctrl-pane">
+          <div class="btn-row"><button class="btn btn-primary" id="adInjNew">Nuovo esempio</button></div>
+          <div class="case-banner cn" id="adInjV">—</div>
+          <p class="hint" id="adInjWhy"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-panel" data-sectab="esercizi" hidden>
+    <div class="card">
+      <h2>Prova tu — È iniettiva?</h2>
+      <p class="lead">Decidi se l’esempio proposto rappresenta una funzione iniettiva.</p>
+      <div class="pt" data-pt="iniet">
+        <svg class="diagram" hidden></svg>
+        <canvas class="plot" hidden></canvas>
+        <p class="pt-q"></p>
+        <div class="pt-opts"></div>
+        <div class="pt-fb"></div>
+        <div class="btn-row"><button class="btn btn-ghost pt-new">Nuovo esercizio</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Esercizi guidati</h2>
+      <div class="accordion">
+        <details>
+          <summary><span>Esercizio 1 · $f(x)=x^2$ ristretta a $[0,+\infty)$</span></summary>
+          <div class="acc-body">
+            <ol class="steps">
+              <li>Su tutto $\mathbb{R}$ non è iniettiva ($f(-2)=f(2)$).</li>
+              <li>Su $[0,+\infty)$ è strettamente crescente: $x_1^2=x_2^2$ con $x_1,x_2\ge 0$ dà $x_1=x_2$.</li>
+            </ol>
+            <div class="sol-box"><span class="t">Conclusione</span><span class="eqline">iniettiva su $[0,+\infty)$</span></div>
+          </div>
+        </details>
+        <details>
+          <summary><span>Esercizio 2 · Verifica che $f(x)=\dfrac{1}{x}$ è iniettiva (su $\mathbb{R}\setminus\{0\}$)</span></summary>
+          <div class="acc-body">
+            <ol class="steps">
+              <li>Pongo $\dfrac{1}{x_1}=\dfrac{1}{x_2}$.</li>
+              <li>«Incrociando» i prodotti: $x_2=x_1$.</li>
+            </ol>
+            <div class="sol-box"><span class="t">Conclusione</span><span class="eqline">iniettiva</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-panel" data-sectab="quiz" hidden>
+    <div class="card">
+      <h2>Quiz di sezione — Iniettività</h2>
+      <p class="lead">10 domande, una alla volta, con correzione immediata.</p>
+      <div class="quiz" data-quiz="iniet"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SURIETTIVITÀ ============================================================ -->
+<section class="scene" id="suriet">
+  <div class="page-head">
+    <h2>Funzioni suriettive</h2>
+    <p class="lead">Ogni elemento del codominio è immagine di almeno un elemento del dominio:
+       l’immagine coincide con il codominio.</p>
+  </div>
+
+  <nav class="sec-tabs" role="tablist" aria-label="Sezioni">
+    <button class="sec-tab active" data-sectab="teoria" role="tab" aria-selected="true">Teoria</button>
+    <button class="sec-tab" data-sectab="sim" role="tab" aria-selected="false">Simulazione</button>
+    <button class="sec-tab" data-sectab="esercizi" role="tab" aria-selected="false">Prova tu</button>
+    <button class="sec-tab" data-sectab="quiz" role="tab" aria-selected="false">Quiz</button>
+  </nav>
+
+  <div class="sec-panel" data-sectab="teoria">
+    <div class="card"><div class="accordion">
+      <details open>
+        <summary>Definizione di funzione suriettiva</summary>
+        <div class="acc-body">
+          <p>Una funzione $f:A\to B$ è <strong>suriettiva</strong> (o «su $B$») se ogni elemento del
+             codominio è immagine di almeno un elemento del dominio:</p>
+          <div class="formula center">$\forall\, y\in B\ \ \exists\, x\in A:\ f(x)=y$</div>
+          <p>In modo equivalente, l’<strong>immagine coincide con il codominio</strong>:</p>
+          <div class="formula center">$\operatorname{Im}(f)=B$</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>La suriettività dipende dal codominio</summary>
+        <div class="acc-body">
+          <p>A differenza dell’iniettività, la suriettività dipende in modo essenziale da
+             <strong>quale codominio</strong> abbiamo scelto. La stessa legge può essere suriettiva o no.</p>
+          <ul>
+            <li>$f:\mathbb{R}\to\mathbb{R},\ f(x)=x^2$ <strong>non</strong> è suriettiva: i valori negativi non sono raggiunti;</li>
+            <li>$f:\mathbb{R}\to[0,+\infty),\ f(x)=x^2$ <strong>è</strong> suriettiva: il codominio è stato ristretto all’immagine.</li>
+          </ul>
+          <div class="note-ok">Si può sempre rendere una funzione suriettiva scegliendo come codominio
+             la sua immagine $\operatorname{Im}(f)$.</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Lettura sul grafico</summary>
+        <div class="acc-body">
+          <p>Per $f:\mathbb{R}\to\mathbb{R}$: la funzione è suriettiva se <strong>ogni</strong> retta
+             orizzontale $y=k$ (con $k$ nel codominio) incontra il grafico <strong>almeno</strong> una volta.
+             L’immagine è l’insieme delle «quote» $k$ effettivamente toccate.</p>
+          <div class="note-warn">$f(x)=e^{x}$ con codominio $\mathbb{R}$ non è suriettiva: le quote $\le 0$
+             non vengono mai raggiunte. L’immagine è $(0,+\infty)$.</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Esempio svolto</summary>
+        <div class="acc-body">
+          <p>$f:\mathbb{R}\to\mathbb{R},\ f(x)=2x+1$ è suriettiva?</p>
+          <ol class="steps">
+            <li>Fisso un generico $y\in\mathbb{R}$ e cerco $x$ con $2x+1=y$.</li>
+            <li>Risolvo: $x=\dfrac{y-1}{2}$, che esiste per ogni $y$ reale.</li>
+            <li>Ho trovato una controimmagine per ogni $y$: la funzione è <strong>suriettiva</strong>.</li>
+          </ol>
+          <div class="sol-box"><span class="t">Conclusione</span><span class="eqline">$\operatorname{Im}(f)=\mathbb{R}=B$</span></div>
+        </div>
+      </details>
+    </div></div>
+  </div>
+
+  <div class="sec-panel" data-sectab="sim" hidden>
+    <div class="card">
+      <h2>Immagine e codominio</h2>
+      <p class="lead">La banda azzurra sull’asse $y$ è l’<strong>immagine</strong> della funzione.
+         Scegli il codominio e muovi la quota $y=k$: l’app controlla se quel valore ha una
+         controimmagine. Suriettiva ⇔ l’immagine riempie tutto il codominio.</p>
+      <div class="sim-layout">
+        <div class="sim-pane">
+          <canvas class="plot" id="suPlot" role="img" aria-label="Grafico con immagine evidenziata"></canvas>
+          <div class="legend">
+            <span><i style="background:#2563eb"></i> y = f(x)</span>
+            <span><i style="background:#1d70bf"></i> immagine (asse y)</span>
+            <span><i style="background:#f59e0b"></i> quota y = k</span>
+          </div>
+        </div>
+        <div class="ctrl-pane">
+          <div class="field">
+            <label for="suSel">Funzione, dominio → codominio</label>
+            <select id="suSel">
+              <option value="lin">y = 2x + 1 : ℝ → ℝ</option>
+              <option value="sqR">y = x² : ℝ → ℝ</option>
+              <option value="sqPos">y = x² : ℝ → [0,∞)</option>
+              <option value="expR">y = eˣ : ℝ → ℝ</option>
+              <option value="cube">y = x³ : ℝ → ℝ</option>
+            </select>
+          </div>
+          <div class="ctrl">
+            <label><span class="nm">k</span><input type="range" id="suY" min="-7" max="7" step="0.1" value="3"><span class="v" id="suYv">3</span></label>
+          </div>
+          <div class="case-banner cn" id="suVerdict">—</div>
+          <div class="read" id="suInfo"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Diagramma a frecce</h2>
+      <p class="lead">È suriettiva se in <strong>ogni</strong> elemento del codominio arriva almeno una freccia.</p>
+      <div class="sim-layout">
+        <div class="sim-pane">
+          <svg class="diagram" id="adSur" viewBox="0 0 460 280" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Diagramma a frecce"></svg>
+        </div>
+        <div class="ctrl-pane">
+          <div class="btn-row"><button class="btn btn-primary" id="adSurNew">Nuovo esempio</button></div>
+          <div class="case-banner cn" id="adSurV">—</div>
+          <p class="hint" id="adSurWhy"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-panel" data-sectab="esercizi" hidden>
+    <div class="card">
+      <h2>Prova tu — È suriettiva?</h2>
+      <p class="lead">Per i diagrammi a frecce il codominio è l’insieme di destra; per i grafici si
+         intende $f:\mathbb{R}\to\mathbb{R}$.</p>
+      <div class="pt" data-pt="suriet">
+        <svg class="diagram" hidden></svg>
+        <canvas class="plot" hidden></canvas>
+        <p class="pt-q"></p>
+        <div class="pt-opts"></div>
+        <div class="pt-fb"></div>
+        <div class="btn-row"><button class="btn btn-ghost pt-new">Nuovo esercizio</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Esercizi guidati</h2>
+      <div class="accordion">
+        <details>
+          <summary><span>Esercizio 1 · $f:\mathbb{R}\to\mathbb{R},\ f(x)=x^3$ è suriettiva?</span></summary>
+          <div class="acc-body">
+            <ol class="steps">
+              <li>Fisso $y\in\mathbb{R}$ e cerco $x$ con $x^3=y$.</li>
+              <li>Esiste sempre: $x=\sqrt[3]{y}$ (la radice cubica è definita per ogni reale).</li>
+            </ol>
+            <div class="sol-box"><span class="t">Conclusione</span><span class="eqline">suriettiva: $\operatorname{Im}(f)=\mathbb{R}$</span></div>
+          </div>
+        </details>
+        <details>
+          <summary><span>Esercizio 2 · Rendi suriettiva $f(x)=x^2$</span></summary>
+          <div class="acc-body">
+            <ol class="steps">
+              <li>Su $\mathbb{R}$ l’immagine è $[0,+\infty)$, quindi non è suriettiva su $\mathbb{R}$.</li>
+              <li>Scelgo come codominio proprio l’immagine.</li>
+            </ol>
+            <div class="sol-box"><span class="t">Conclusione</span><span class="eqline">$f:\mathbb{R}\to[0,+\infty)$ è suriettiva</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-panel" data-sectab="quiz" hidden>
+    <div class="card">
+      <h2>Quiz di sezione — Suriettività</h2>
+      <p class="lead">10 domande, una alla volta, con correzione immediata.</p>
+      <div class="quiz" data-quiz="suriet"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ BIIETTIVITÀ ============================================================ -->
+<section class="scene" id="biiet">
+  <div class="page-head">
+    <h2>Funzioni biiettive</h2>
+    <p class="lead">Iniettiva e suriettiva insieme: una corrispondenza biunivoca tra dominio e
+       codominio. È la condizione che permette di invertire una funzione.</p>
+  </div>
+
+  <nav class="sec-tabs" role="tablist" aria-label="Sezioni">
+    <button class="sec-tab active" data-sectab="teoria" role="tab" aria-selected="true">Teoria</button>
+    <button class="sec-tab" data-sectab="sim" role="tab" aria-selected="false">Simulazione</button>
+    <button class="sec-tab" data-sectab="esercizi" role="tab" aria-selected="false">Prova tu</button>
+    <button class="sec-tab" data-sectab="quiz" role="tab" aria-selected="false">Quiz</button>
+  </nav>
+
+  <div class="sec-panel" data-sectab="teoria">
+    <div class="card"><div class="accordion">
+      <details open>
+        <summary>Definizione di funzione biiettiva</summary>
+        <div class="acc-body">
+          <p>Una funzione $f:A\to B$ è <strong>biiettiva</strong> (o <strong>biunivoca</strong>) se è
+             <strong>contemporaneamente</strong> iniettiva e suriettiva.</p>
+          <div class="defbox"><span class="t">Biiettiva</span>
+             iniettiva ($x_1\neq x_2\Rightarrow f(x_1)\neq f(x_2)$) <strong>e</strong>
+             suriettiva ($\operatorname{Im}(f)=B$).</div>
+          <p>In una funzione biiettiva ogni elemento del codominio è raggiunto da
+             <strong>esattamente un</strong> elemento del dominio: si parla di
+             <strong>corrispondenza biunivoca</strong>.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Le due proprietà, a confronto</summary>
+        <div class="acc-body">
+          <div class="tbl-wrap"><table class="tbl">
+            <tr><th>Proprietà</th><th>Richiede che ogni $y\in B$…</th><th>Frecce in arrivo su ogni $y$</th></tr>
+            <tr><td>Iniettiva</td><td>abbia <em>al più</em> una controimmagine</td><td class="m">0 oppure 1</td></tr>
+            <tr><td>Suriettiva</td><td>abbia <em>almeno</em> una controimmagine</td><td class="m">≥ 1</td></tr>
+            <tr><td>Biiettiva</td><td>abbia <em>esattamente</em> una controimmagine</td><td class="m">esattamente 1</td></tr>
+          </table></div>
+          <p>Nel diagramma a frecce: biiettiva significa che le frecce accoppiano perfettamente gli
+             elementi dei due insiemi, uno a uno. In particolare, se $A$ e $B$ sono finiti, una
+             biiezione può esistere solo se hanno lo <strong>stesso numero</strong> di elementi.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Biiettività e invertibilità</summary>
+        <div class="acc-body">
+          <p>Una funzione è <strong>invertibile</strong> (ammette funzione inversa) <strong>se e solo se</strong>
+             è <strong>biiettiva</strong>. L’iniettività garantisce che «tornando indietro» da un valore
+             si trovi un solo elemento; la suriettività garantisce che si possa partire da
+             <em>qualsiasi</em> elemento del codominio.</p>
+          <div class="note-ok">Se una funzione non è biiettiva si può spesso renderla tale restringendo
+             il dominio (per l’iniettività) e scegliendo come codominio l’immagine (per la suriettività).</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Esempio svolto</summary>
+        <div class="acc-body">
+          <p>$f:\mathbb{R}\to\mathbb{R},\ f(x)=2x+1$ è biiettiva?</p>
+          <ol class="steps">
+            <li><strong>Iniettiva:</strong> $2x_1+1=2x_2+1\Rightarrow x_1=x_2$. Sì.</li>
+            <li><strong>Suriettiva:</strong> per ogni $y$, $x=\dfrac{y-1}{2}$ esiste. Sì.</li>
+            <li>Essendo iniettiva e suriettiva, è <strong>biiettiva</strong> (quindi invertibile).</li>
+          </ol>
+          <div class="sol-box"><span class="t">Conclusione</span><span class="eqline">$f$ è biiettiva su $\mathbb{R}$</span></div>
+        </div>
+      </details>
+    </div></div>
+  </div>
+
+  <div class="sec-panel" data-sectab="sim" hidden>
+    <div class="card">
+      <h2>Iniettiva + suriettiva = biiettiva</h2>
+      <p class="lead">Scegli funzione, dominio e codominio: l’app applica il test della retta
+         orizzontale su tutto il codominio e indica le tre proprietà.</p>
+      <div class="sim-layout">
+        <div class="sim-pane">
+          <canvas class="plot" id="biPlot" role="img" aria-label="Grafico della funzione sul dominio scelto"></canvas>
+          <div class="legend">
+            <span><i style="background:#2563eb"></i> y = f(x) sul dominio</span>
+            <span><i style="background:#1d70bf"></i> immagine</span>
+          </div>
+        </div>
+        <div class="ctrl-pane">
+          <div class="field">
+            <label for="biSel">Funzione, dominio → codominio</label>
+            <select id="biSel">
+              <option value="lin">y = 2x + 1 : ℝ → ℝ</option>
+              <option value="sqR">y = x² : ℝ → ℝ</option>
+              <option value="sqPos">y = x² : [0,∞) → [0,∞)</option>
+              <option value="exp">y = eˣ : ℝ → ℝ</option>
+              <option value="expPos">y = eˣ : ℝ → (0,∞)</option>
+              <option value="cube">y = x³ : ℝ → ℝ</option>
+            </select>
+          </div>
+          <div class="case-banner cn" id="biInj">Iniettiva: —</div>
+          <div class="case-banner cn" id="biSur">Suriettiva: —</div>
+          <div class="case-banner cn" id="biBi">Biiettiva: —</div>
+          <p class="hint" id="biWhy"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Diagramma a frecce</h2>
+      <p class="lead">Biiettiva ⇔ ogni elemento di destra riceve <strong>esattamente una</strong> freccia.</p>
+      <div class="sim-layout">
+        <div class="sim-pane">
+          <svg class="diagram" id="adBi" viewBox="0 0 460 280" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Diagramma a frecce"></svg>
+        </div>
+        <div class="ctrl-pane">
+          <div class="btn-row"><button class="btn btn-primary" id="adBiNew">Nuovo esempio</button></div>
+          <div class="case-banner cn" id="adBiV">—</div>
+          <p class="hint" id="adBiWhy"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-panel" data-sectab="esercizi" hidden>
+    <div class="card">
+      <h2>Prova tu — Classifica la funzione</h2>
+      <p class="lead">Per ogni esempio indica se è iniettiva, suriettiva, biiettiva o nessuna delle tre.
+         Per i grafici si intende $f:\mathbb{R}\to\mathbb{R}$.</p>
+      <div class="pt" data-pt="biiet">
+        <svg class="diagram" hidden></svg>
+        <canvas class="plot" hidden></canvas>
+        <p class="pt-q"></p>
+        <div class="pt-opts"></div>
+        <div class="pt-fb"></div>
+        <div class="btn-row"><button class="btn btn-ghost pt-new">Nuovo esercizio</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Esercizi guidati</h2>
+      <div class="accordion">
+        <details>
+          <summary><span>Esercizio 1 · $f:\mathbb{R}\to\mathbb{R},\ f(x)=x^2$</span></summary>
+          <div class="acc-body">
+            <ol class="steps">
+              <li>Non iniettiva: $f(-1)=f(1)$.</li>
+              <li>Non suriettiva: i valori negativi non sono raggiunti.</li>
+              <li>Non essendo né l’una né l’altra, non è biiettiva.</li>
+            </ol>
+            <div class="sol-box"><span class="t">Conclusione</span><span class="eqline">nessuna delle tre proprietà</span></div>
+          </div>
+        </details>
+        <details>
+          <summary><span>Esercizio 2 · Rendi biiettiva $f(x)=x^2$</span></summary>
+          <div class="acc-body">
+            <ol class="steps">
+              <li>Restringo il dominio a $[0,+\infty)$: diventa iniettiva.</li>
+              <li>Scelgo codominio $[0,+\infty)$ (l’immagine): diventa suriettiva.</li>
+            </ol>
+            <div class="sol-box"><span class="t">Conclusione</span><span class="eqline">$f:[0,\infty)\to[0,\infty)$ è biiettiva</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-panel" data-sectab="quiz" hidden>
+    <div class="card">
+      <h2>Quiz di sezione — Biiettività</h2>
+      <p class="lead">10 domande, una alla volta, con correzione immediata.</p>
+      <div class="quiz" data-quiz="biiet"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ COMPOSIZIONE ============================================================ -->
+<section class="scene" id="comp">
+  <div class="page-head">
+    <h2>Composizione di funzioni</h2>
+    <p class="lead">Applicare due funzioni in sequenza: l’uscita della prima diventa l’ingresso della
+       seconda. L’ordine è importante.</p>
+  </div>
+
+  <nav class="sec-tabs" role="tablist" aria-label="Sezioni">
+    <button class="sec-tab active" data-sectab="teoria" role="tab" aria-selected="true">Teoria</button>
+    <button class="sec-tab" data-sectab="sim" role="tab" aria-selected="false">Simulazione</button>
+    <button class="sec-tab" data-sectab="esercizi" role="tab" aria-selected="false">Prova tu</button>
+    <button class="sec-tab" data-sectab="quiz" role="tab" aria-selected="false">Quiz</button>
+  </nav>
+
+  <div class="sec-panel" data-sectab="teoria">
+    <div class="card"><div class="accordion">
+      <details open>
+        <summary>Definizione di funzione composta</summary>
+        <div class="acc-body">
+          <p>Date $f:A\to B$ e $g:B\to C$, la <strong>funzione composta</strong> $g\circ f$
+             («$g$ dopo $f$») è la funzione da $A$ a $C$ definita da:</p>
+          <div class="formula center">$(g\circ f)(x)=g\big(f(x)\big)$</div>
+          <p>Si applica <strong>prima $f$</strong>, poi si dà il risultato in pasto a $g$.
+             Si legge da destra verso sinistra.</p>
+          <div class="chain">
+            <span class="box x">x</span><span class="arr">→</span>
+            <span class="box">f</span><span class="arr">→</span>
+            <span class="box x">f(x)</span><span class="arr">→</span>
+            <span class="box g">g</span><span class="arr">→</span>
+            <span class="box x">g(f(x))</span>
+          </div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Condizione di esistenza</summary>
+        <div class="acc-body">
+          <p>Perché $g\circ f$ abbia senso, le immagini prodotte da $f$ devono poter essere
+             «accettate» da $g$: serve che $\operatorname{Im}(f)$ sia contenuta nel dominio di $g$.</p>
+          <div class="note-warn">Esempio: se $f(x)=x-5$ e $g(x)=\sqrt{x}$, allora $(g\circ f)(x)=\sqrt{x-5}$
+             esiste solo per $x\ge 5$: il dominio della composta può essere più piccolo di quello di $f$.</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>L’ordine conta: $g\circ f \neq f\circ g$</summary>
+        <div class="acc-body">
+          <p>In generale la composizione <strong>non è commutativa</strong>. Con $f(x)=x+1$ e $g(x)=x^2$:</p>
+          <div class="formula">$(g\circ f)(x)=g(x+1)=(x+1)^2$</div>
+          <div class="formula">$(f\circ g)(x)=f(x^2)=x^2+1$</div>
+          <p>Due funzioni diverse: ad esempio in $x=2$ danno $9$ e $5$.</p>
+          <div class="note-ok">La composizione è però <strong>associativa</strong>:
+             $(h\circ g)\circ f = h\circ(g\circ f)$.</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>La funzione identità</summary>
+        <div class="acc-body">
+          <p>La funzione <strong>identità</strong> $\operatorname{id}(x)=x$ è l’elemento neutro della
+             composizione: $f\circ \operatorname{id}=\operatorname{id}\circ f=f$. Giocherà un ruolo
+             centrale nella definizione di funzione inversa.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Esempio svolto</summary>
+        <div class="acc-body">
+          <p>Siano $f(x)=2x+1$ e $g(x)=x^2$. Calcoliamo $(g\circ f)(3)$ e $(f\circ g)(3)$.</p>
+          <ol class="steps">
+            <li>$(g\circ f)(3)=g(f(3))=g(7)=49$.</li>
+            <li>$(f\circ g)(3)=f(g(3))=f(9)=19$.</li>
+          </ol>
+          <div class="sol-box"><span class="t">Conclusione</span><span class="eqline">$49\neq 19$: l’ordine cambia il risultato</span></div>
+        </div>
+      </details>
+    </div></div>
+  </div>
+
+  <div class="sec-panel" data-sectab="sim" hidden>
+    <div class="card">
+      <h2>La macchina composta</h2>
+      <p class="lead">Scegli $f$ e $g$ e muovi l’ingresso $x$: segui il valore mentre attraversa le due
+         «macchine». Confronta $g\circ f$ con $f\circ g$ per vedere che l’ordine conta.</p>
+      <div class="sim-layout">
+        <div class="sim-pane">
+          <div class="chain" id="compChain"></div>
+          <canvas class="plot" id="compPlot" role="img" aria-label="Grafici di f, g e della composta"></canvas>
+          <div class="legend">
+            <span><i style="background:#2563eb"></i> f(x)</span>
+            <span><i style="background:#f59e0b"></i> g(x)</span>
+            <span><i style="background:#1d70bf"></i> (g∘f)(x)</span>
+          </div>
+        </div>
+        <div class="ctrl-pane">
+          <div class="field">
+            <label for="compF">Funzione f(x)</label>
+            <select id="compF">
+              <option value="2x+1">f(x) = 2x + 1</option>
+              <option value="x-3">f(x) = x − 3</option>
+              <option value="x/2">f(x) = x / 2</option>
+              <option value="x^2">f(x) = x²</option>
+              <option value="-x">f(x) = −x</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="compG">Funzione g(x)</label>
+            <select id="compG">
+              <option value="x^2">g(x) = x²</option>
+              <option value="2x+1">g(x) = 2x + 1</option>
+              <option value="x+1">g(x) = x + 1</option>
+              <option value="x/2">g(x) = x / 2</option>
+              <option value="-x">g(x) = −x</option>
+            </select>
+          </div>
+          <div class="ctrl">
+            <label><span class="nm">x</span><input type="range" id="compX" min="-5" max="5" step="0.1" value="2"><span class="v" id="compXv">2</span></label>
+          </div>
+          <div class="read" id="compInfo"></div>
+          <p class="hint" id="compWhy"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-panel" data-sectab="esercizi" hidden>
+    <div class="card">
+      <h2>Prova tu — Calcola la composta</h2>
+      <p class="lead">Scegli la risposta corretta. Ricevi subito correzione e spiegazione.</p>
+      <div class="pt" data-pt="comp">
+        <svg class="diagram" hidden></svg>
+        <canvas class="plot" hidden></canvas>
+        <p class="pt-q"></p>
+        <div class="pt-opts"></div>
+        <div class="pt-fb"></div>
+        <div class="btn-row"><button class="btn btn-ghost pt-new">Nuovo esercizio</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Esercizi guidati</h2>
+      <div class="accordion">
+        <details>
+          <summary><span>Esercizio 1 · $f(x)=x+2,\ g(x)=3x$: trova $g\circ f$ e $f\circ g$</span></summary>
+          <div class="acc-body">
+            <ol class="steps">
+              <li>$(g\circ f)(x)=g(x+2)=3(x+2)=3x+6$.</li>
+              <li>$(f\circ g)(x)=f(3x)=3x+2$.</li>
+            </ol>
+            <div class="sol-box"><span class="t">Conclusione</span><span class="eqline">$3x+6\neq 3x+2$</span></div>
+          </div>
+        </details>
+        <details>
+          <summary><span>Esercizio 2 · Dominio di $(g\circ f)(x)=\sqrt{x-1}$ con $f(x)=x-1,\ g(x)=\sqrt{x}$</span></summary>
+          <div class="acc-body">
+            <ol class="steps">
+              <li>$g$ richiede argomento $\ge 0$: serve $f(x)\ge 0$, cioè $x-1\ge 0$.</li>
+              <li>Quindi $x\ge 1$.</li>
+            </ol>
+            <div class="sol-box"><span class="t">Dominio</span><span class="eqline">$x\ge 1$, cioè $[1,+\infty)$</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-panel" data-sectab="quiz" hidden>
+    <div class="card">
+      <h2>Quiz di sezione — Composizione</h2>
+      <p class="lead">10 domande, una alla volta, con correzione immediata.</p>
+      <div class="quiz" data-quiz="comp"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ FUNZIONE INVERSA ============================================================ -->
+<section class="scene" id="inv">
+  <div class="page-head">
+    <h2>Funzione inversa</h2>
+    <p class="lead">«Tornare indietro»: la funzione che annulla l’effetto di $f$. Esiste solo se $f$ è
+       biiettiva, e il suo grafico è simmetrico rispetto alla retta $y=x$.</p>
+  </div>
+
+  <nav class="sec-tabs" role="tablist" aria-label="Sezioni">
+    <button class="sec-tab active" data-sectab="teoria" role="tab" aria-selected="true">Teoria</button>
+    <button class="sec-tab" data-sectab="sim" role="tab" aria-selected="false">Simulazione</button>
+    <button class="sec-tab" data-sectab="esercizi" role="tab" aria-selected="false">Prova tu</button>
+    <button class="sec-tab" data-sectab="quiz" role="tab" aria-selected="false">Quiz</button>
+  </nav>
+
+  <div class="sec-panel" data-sectab="teoria">
+    <div class="card"><div class="accordion">
+      <details open>
+        <summary>Definizione di funzione inversa</summary>
+        <div class="acc-body">
+          <p>Se $f:A\to B$ è <strong>biiettiva</strong>, la sua <strong>funzione inversa</strong>
+             $f^{-1}:B\to A$ associa a ogni $y\in B$ l’unico $x\in A$ tale che $f(x)=y$:</p>
+          <div class="formula center">$f^{-1}(y)=x\ \iff\ f(x)=y$</div>
+          <p>Inversa e funzione si «annullano» a vicenda:</p>
+          <div class="formula center">$f^{-1}\big(f(x)\big)=x\qquad f\big(f^{-1}(y)\big)=y$</div>
+          <div class="note-warn">Attenzione: $f^{-1}$ è la funzione inversa, <strong>non</strong> il reciproco
+             $\dfrac{1}{f}$.</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Quando esiste? La condizione di invertibilità</summary>
+        <div class="acc-body">
+          <p>$f$ è <strong>invertibile se e solo se è biiettiva</strong>:</p>
+          <ul>
+            <li>l’<strong>iniettività</strong> assicura che a ogni $y$ corrisponda <em>un solo</em> $x$ (inversa ben definita);</li>
+            <li>la <strong>suriettività</strong> assicura che $f^{-1}$ sia definita su <em>tutto</em> $B$.</li>
+          </ul>
+          <p>Se $f$ non è biiettiva, la si può spesso invertire restringendo dominio e codominio
+             (ad esempio $\sqrt{\ }$ è l’inversa di $x^2$ ristretta a $[0,+\infty)$).</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Il grafico: simmetria rispetto a $y=x$</summary>
+        <div class="acc-body">
+          <p>I grafici di $f$ e di $f^{-1}$ sono <strong>simmetrici rispetto alla bisettrice</strong>
+             $y=x$: se $(a,b)$ appartiene al grafico di $f$, allora $(b,a)$ appartiene a quello di $f^{-1}$.
+             Riflettere il grafico scambia il ruolo degli assi (ascisse ↔ ordinate).</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Come si calcola l’espressione di $f^{-1}$</summary>
+        <div class="acc-body">
+          <ol class="steps">
+            <li>Scrivi $y=f(x)$.</li>
+            <li>Risolvi rispetto a $x$, ottenendo $x$ in funzione di $y$.</li>
+            <li>Scambia i nomi delle variabili ($x\leftrightarrow y$) per riscrivere l’inversa come $y=f^{-1}(x)$.</li>
+          </ol>
+          <div class="formula center">$y=2x+1\ \Rightarrow\ x=\dfrac{y-1}{2}\ \Rightarrow\ f^{-1}(x)=\dfrac{x-1}{2}$</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Esempio svolto</summary>
+        <div class="acc-body">
+          <p>Trova l’inversa di $f(x)=x^3$.</p>
+          <ol class="steps">
+            <li>$f$ è biiettiva su $\mathbb{R}$ (strettamente crescente e suriettiva), quindi invertibile.</li>
+            <li>$y=x^3\ \Rightarrow\ x=\sqrt[3]{y}$.</li>
+            <li>Scambio le variabili: $f^{-1}(x)=\sqrt[3]{x}$.</li>
+            <li>Verifica: $f^{-1}(f(2))=\sqrt[3]{8}=2$. ✓</li>
+          </ol>
+          <div class="sol-box"><span class="t">Inversa</span><span class="eqline">$f^{-1}(x)=\sqrt[3]{x}$</span></div>
+        </div>
+      </details>
+    </div></div>
+  </div>
+
+  <div class="sec-panel" data-sectab="sim" hidden>
+    <div class="card">
+      <h2>Riflessione rispetto a y = x</h2>
+      <p class="lead">Il grafico arancione è l’inversa, ottenuta riflettendo $f$ (blu) rispetto alla
+         bisettrice. Muovi $x$: il punto $(x,f(x))$ e il suo riflesso $(f(x),x)$ si muovono insieme.</p>
+      <div class="sim-layout">
+        <div class="sim-pane">
+          <canvas class="plot" id="invPlot" role="img" aria-label="Grafico di f e della sua inversa"></canvas>
+          <div class="legend">
+            <span><i style="background:#2563eb"></i> y = f(x)</span>
+            <span><i style="background:#f59e0b"></i> y = f⁻¹(x)</span>
+            <span><i style="background:#9ca3af"></i> y = x</span>
+          </div>
+        </div>
+        <div class="ctrl-pane">
+          <div class="field">
+            <label for="invF">Funzione invertibile</label>
+            <select id="invF">
+              <option value="2x+1">f(x) = 2x + 1</option>
+              <option value="x^3">f(x) = x³</option>
+              <option value="exp">f(x) = eˣ</option>
+              <option value="x^2pos">f(x) = x²  su [0,∞)</option>
+              <option value="1/x">f(x) = 1/x</option>
+            </select>
+          </div>
+          <div class="ctrl">
+            <label><span class="nm">x</span><input type="range" id="invX" min="-4" max="4" step="0.1" value="1"><span class="v" id="invXv">1</span></label>
+          </div>
+          <div class="eq-display" id="invFormula">—</div>
+          <div class="read" id="invInfo"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-panel" data-sectab="esercizi" hidden>
+    <div class="card">
+      <h2>Prova tu — Funzione inversa</h2>
+      <p class="lead">Riconosci l’inversa corretta o valuta l’inversa in un punto.</p>
+      <div class="pt" data-pt="inv">
+        <svg class="diagram" hidden></svg>
+        <canvas class="plot" hidden></canvas>
+        <p class="pt-q"></p>
+        <div class="pt-opts"></div>
+        <div class="pt-fb"></div>
+        <div class="btn-row"><button class="btn btn-ghost pt-new">Nuovo esercizio</button></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Esercizi guidati</h2>
+      <div class="accordion">
+        <details>
+          <summary><span>Esercizio 1 · Inversa di $f(x)=\dfrac{x-4}{3}$</span></summary>
+          <div class="acc-body">
+            <ol class="steps">
+              <li>$y=\dfrac{x-4}{3}$.</li>
+              <li>Risolvo: $3y=x-4\Rightarrow x=3y+4$.</li>
+              <li>Scambio le variabili: $f^{-1}(x)=3x+4$.</li>
+            </ol>
+            <div class="sol-box"><span class="t">Inversa</span><span class="eqline">$f^{-1}(x)=3x+4$</span></div>
+          </div>
+        </details>
+        <details>
+          <summary><span>Esercizio 2 · Perché $f(x)=x^2$ su $\mathbb{R}$ non è invertibile?</span></summary>
+          <div class="acc-body">
+            <ol class="steps">
+              <li>Non è iniettiva: $f(-3)=f(3)=9$, quindi «tornando indietro» da $9$ non si sa se scegliere $-3$ o $3$.</li>
+              <li>Serve restringere il dominio, ad es. a $[0,+\infty)$: allora l’inversa è $\sqrt{x}$.</li>
+            </ol>
+            <div class="sol-box"><span class="t">Conclusione</span><span class="eqline">invertibile solo dopo restrizione</span></div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-panel" data-sectab="quiz" hidden>
+    <div class="card">
+      <h2>Quiz di sezione — Funzione inversa</h2>
+      <p class="lead">10 domande, una alla volta, con correzione immediata.</p>
+      <div class="quiz" data-quiz="inv"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ QUIZ RIEPILOGATIVO ============================================================ -->
+<section class="scene" id="ripasso">
+  <div class="page-head">
+    <h2>Quiz riepilogativo</h2>
+    <p class="lead">20 domande che attraversano tutti gli argomenti: definizione di funzione, iniettività,
+       suriettività, biiettività, composizione e funzione inversa. Una domanda alla volta, con
+       correzione e spiegazione immediate.</p>
+  </div>
+  <div class="card">
+    <div class="quiz" data-quiz="ripasso"></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>Funzioni · app didattica di matematica. Teoria, simulazioni interattive e quiz di autovalutazione.
+     Tutto in un unico file, funziona anche offline e da mobile.</p>
+</footer>
+<script>
+'use strict';
+/* ================================================================
+   Funzioni · logica dell'app (navigazione, grafici, quiz)
+   ================================================================ */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const ri=n=>Math.floor(Math.random()*n);
+const pick=a=>a[ri(a.length)];
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){const t=a%b;a=b;b=t}return a||1}
+function fmtInt(n){return String(n).replace('-','−')}
+function fmt(x,dec=2){
+  if(!isFinite(x))return x>0?'+∞':'−∞';
+  const p=Math.pow(10,dec);let r=Math.round(x*p)/p;
+  if(Object.is(r,-0))r=0;
+  let s=String(r);
+  if(s.includes('e'))s=r.toFixed(dec);
+  return s.replace('.',',').replace('-','−');
+}
+function niceStep(v){
+  const p=Math.pow(10,Math.floor(Math.log10(v)));const m=v/p;
+  return(m<1.5?1:m<3.5?2:m<7.5?5:10)*p;
+}
+const COLP='#2563eb',COLA='#f59e0b',COLS='#1d70bf',COLG='#9ca3af',COLN='#d97706';
+
+/* ---------------- Plot (grafici su canvas) ---------------- */
+class Plot{
+  constructor(c){this.c=c;this.g=c.getContext('2d');this.w=640;this.h=400;
+    this.x1=-10;this.x2=10;this.y1=-10;this.y2=10}
+  fit(){
+    const w=this.c.clientWidth||640;
+    const h=Math.max(240,Math.min(400,Math.round(w*0.62)));
+    const r=window.devicePixelRatio||1;
+    this.c.width=Math.round(w*r);this.c.height=Math.round(h*r);
+    this.c.style.height=h+'px';
+    this.g.setTransform(r,0,0,r,0,0);
+    this.w=w;this.h=h;
+  }
+  view(x1,x2,y1,y2){this.x1=x1;this.x2=x2;this.y1=y1;this.y2=y2}
+  X(x){return(x-this.x1)/(this.x2-this.x1)*this.w}
+  Y(y){return this.h-(y-this.y1)/(this.y2-this.y1)*this.h}
+  ix(px){return this.x1+px/this.w*(this.x2-this.x1)}
+  axes(){
+    const g=this.g;
+    g.clearRect(0,0,this.w,this.h);
+    const sx=niceStep((this.x2-this.x1)/9),sy=niceStep((this.y2-this.y1)/7);
+    g.lineWidth=1;g.strokeStyle='#eef1f6';
+    g.beginPath();
+    for(let x=Math.ceil(this.x1/sx)*sx;x<=this.x2+1e-9;x+=sx){
+      const px=this.X(x);g.moveTo(px,0);g.lineTo(px,this.h);
+    }
+    for(let y=Math.ceil(this.y1/sy)*sy;y<=this.y2+1e-9;y+=sy){
+      const py=this.Y(y);g.moveTo(0,py);g.lineTo(this.w,py);
+    }
+    g.stroke();
+    const y0=this.Y(0),x0=this.X(0);
+    g.strokeStyle='#9ca3af';g.lineWidth=1.4;
+    g.beginPath();
+    if(y0>=0&&y0<=this.h){g.moveTo(0,y0);g.lineTo(this.w,y0);
+      g.moveTo(this.w-8,y0-4);g.lineTo(this.w,y0);g.lineTo(this.w-8,y0+4);}
+    if(x0>=0&&x0<=this.w){g.moveTo(x0,this.h);g.lineTo(x0,0);
+      g.moveTo(x0-4,8);g.lineTo(x0,0);g.lineTo(x0+4,8);}
+    g.stroke();
+    g.font='10.5px Inter,Roboto,system-ui,sans-serif';g.fillStyle='#9ca3af';
+    g.textAlign='center';
+    const ty=Math.min(Math.max(y0+13,12),this.h-4);
+    for(let x=Math.ceil(this.x1/sx)*sx;x<=this.x2+1e-9;x+=sx){
+      if(Math.abs(x)<sx/2)continue;
+      g.fillText(fmt(x,2),this.X(x),ty);
+    }
+    g.textAlign='left';
+    const tx=Math.min(Math.max(x0+5,3),this.w-26);
+    for(let y=Math.ceil(this.y1/sy)*sy;y<=this.y2+1e-9;y+=sy){
+      if(Math.abs(y)<sy/2)continue;
+      g.fillText(fmt(y,2),tx,this.Y(y)-3);
+    }
+  }
+  plotFn(f,color,width,dash){
+    const g=this.g;g.save();
+    g.strokeStyle=color;g.lineWidth=width||2.6;
+    if(dash)g.setLineDash(dash);
+    g.beginPath();let pen=false;
+    for(let px=0;px<=this.w;px+=2){
+      const y=f(this.ix(px));
+      if(!isFinite(y)){pen=false;continue}
+      const py=this.Y(y);
+      if(py<-3000||py>3000){pen=false;continue}
+      if(!pen){g.moveTo(px,py);pen=true}else g.lineTo(px,py);
+    }
+    g.stroke();g.restore();
+  }
+  band(xa,xb,color){
+    const g=this.g;g.save();g.fillStyle=color;
+    const A=Math.max(0,this.X(xa)),B=Math.min(this.w,this.X(xb));
+    if(B>A)g.fillRect(A,0,B-A,this.h);
+    g.restore();
+  }
+  hband(ya,yb,color){
+    const g=this.g;g.save();g.fillStyle=color;
+    let A=this.Y(yb),B=this.Y(ya);
+    A=Math.max(0,A);B=Math.min(this.h,B);
+    if(B>A)g.fillRect(0,A,this.w,B-A);
+    g.restore();
+  }
+  vline(x,color,dash){
+    const g=this.g;g.save();g.strokeStyle=color;g.lineWidth=1.8;
+    if(dash)g.setLineDash(dash);
+    g.beginPath();g.moveTo(this.X(x),0);g.lineTo(this.X(x),this.h);g.stroke();g.restore();
+  }
+  hline(y,color,dash){
+    const g=this.g;g.save();g.strokeStyle=color;g.lineWidth=1.8;
+    if(dash)g.setLineDash(dash);
+    g.beginPath();g.moveTo(0,this.Y(y));g.lineTo(this.w,this.Y(y));g.stroke();g.restore();
+  }
+  imageBar(ya,yb,color){
+    const g=this.g,x0=Math.max(6,this.X(0));
+    let A=this.Y(yb),B=this.Y(ya);
+    if(!isFinite(A))A=-20;if(!isFinite(B))B=this.h+20;
+    A=Math.max(-5,A);B=Math.min(this.h+5,B);
+    g.save();g.strokeStyle=color;g.lineWidth=6;g.lineCap='round';
+    g.beginPath();g.moveTo(x0,A);g.lineTo(x0,B);g.stroke();g.restore();
+  }
+  point(x,y,color,label,dx,dy){
+    const g=this.g,px=this.X(x),py=this.Y(y);
+    g.save();
+    g.fillStyle=color;g.strokeStyle='#fff';g.lineWidth=2;
+    g.beginPath();g.arc(px,py,5.2,0,7);g.fill();g.stroke();
+    if(label){
+      g.font='bold 12px Inter,Roboto,system-ui,sans-serif';
+      g.textAlign='left';
+      const lx=px+(dx===undefined?8:dx),ly=py+(dy===undefined?-9:dy);
+      g.lineWidth=3.5;g.strokeStyle='rgba(255,255,255,.9)';
+      g.strokeText(label,lx,ly);g.fillStyle=color;g.fillText(label,lx,ly);
+    }
+    g.restore();
+  }
+  dot(x,y,color,r){
+    const g=this.g,px=this.X(x),py=this.Y(y);
+    g.save();g.fillStyle=color;g.strokeStyle='#fff';g.lineWidth=1.6;
+    g.beginPath();g.arc(px,py,r||4,0,7);g.fill();g.stroke();g.restore();
+  }
+  label(x,y,text,color,dx,dy){
+    const g=this.g;g.save();
+    g.font='bold 12px Inter,Roboto,system-ui,sans-serif';g.textAlign='left';
+    const lx=this.X(x)+(dx||0),ly=this.Y(y)+(dy||0);
+    g.lineWidth=3.5;g.strokeStyle='rgba(255,255,255,.9)';
+    g.strokeText(text,lx,ly);g.fillStyle=color;g.fillText(text,lx,ly);
+    g.restore();
+  }
+}
+
+/* ---------------- Registro simulazioni / ridisegno ---------------- */
+const SIMS=[];
+function regSim(canvas,draw){SIMS.push({canvas,draw})}
+function redrawVisible(){
+  SIMS.forEach(s=>{try{if(s.canvas&&s.canvas.offsetParent!==null)s.draw()}catch(e){console.error(e)}});
+}
+let rszT=null;
+window.addEventListener('resize',()=>{clearTimeout(rszT);rszT=setTimeout(redrawVisible,120)});
+
+/* Trova le intersezioni di f(x)=k nell'intervallo [a,b] (per i test grafici) */
+function solveEq(f,k,a,b,steps){
+  steps=steps||900;const xs=[];let px=a,pv=f(a)-k;
+  for(let i=1;i<=steps;i++){
+    const x=a+(b-a)*i/steps,v=f(x)-k;
+    if(isFinite(pv)&&isFinite(v)){
+      if(pv===0){xs.push(px)}
+      else if(pv*v<0){
+        let lo=px,hi=x,flo=pv;
+        for(let j=0;j<40;j++){const m=(lo+hi)/2,fm=f(m)-k;if(flo*fm<=0){hi=m}else{lo=m;flo=fm}}
+        xs.push((lo+hi)/2);
+      }
+    }
+    px=x;pv=v;
+  }
+  // de-duplica
+  const out=[];xs.forEach(x=>{if(!out.some(o=>Math.abs(o-x)<1e-3))out.push(x)});
+  return out;
+}
+
+/* ---------------- Navigazione principale ---------------- */
+const navBtns=$$('#mainNav button');
+function show(id){
+  $$('.scene').forEach(s=>s.classList.toggle('active',s.id===id));
+  navBtns.forEach(b=>b.classList.toggle('active',b.dataset.target===id));
+  if(location.hash!=='#'+id)history.replaceState(null,'','#'+id);
+  window.scrollTo(0,0);
+  requestAnimationFrame(()=>requestAnimationFrame(redrawVisible));
+}
+navBtns.forEach(b=>b.addEventListener('click',()=>show(b.dataset.target)));
+$$('.home-card').forEach(b=>b.addEventListener('click',()=>show(b.dataset.target)));
+window.addEventListener('hashchange',()=>{
+  const id=location.hash.slice(1);
+  if(document.getElementById(id))show(id);
+});
+
+/* ---------------- Sec-tabs (4 pannelli per sezione) ---------------- */
+$$('.sec-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    const sec=tab.closest('section');if(!sec)return;
+    sec.querySelectorAll('.sec-tab').forEach(t=>{
+      t.classList.toggle('active',t===tab);
+      t.setAttribute('aria-selected',t===tab);
+    });
+    sec.querySelectorAll('.sec-panel').forEach(p=>{
+      p.hidden=p.dataset.sectab!==tab.dataset.sectab;
+    });
+    requestAnimationFrame(()=>requestAnimationFrame(redrawVisible));
+  });
+});
+
+/* ---------------- Motore quiz ---------------- */
+function shuffled(arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){const j=ri(i+1);const t=a[i];a[i]=a[j];a[j]=t}
+  return a;
+}
+function initQuiz(el){
+  const data=QUIZZES[el.dataset.quiz];
+  if(!data){el.innerHTML='<p class="hint">Quiz non disponibile.</p>';return}
+  let i=0,score=0;
+  const history=data.map(()=>null);
+  const orders=data.map(()=>null);
+  function ensureOrder(idx){
+    if(!orders[idx])orders[idx]=shuffled(data[idx].opts.map((t,ix)=>({t,ix})));
+  }
+  function qHTML(){
+    ensureOrder(i);
+    const q=data[i],order=orders[i],hist=history[i],isAns=hist!==null;
+    el.innerHTML=
+      '<div class="quiz-hd"><span>Domanda '+(i+1)+' di '+data.length+'</span>'+
+      '<span class="score">Punteggio: '+score+'</span></div>'+
+      '<div class="quiz-bar"><i style="width:'+((isAns?i+1:i)/data.length*100)+'%"></i></div>'+
+      '<p class="quiz-q">'+q.q+'</p>'+
+      '<div class="quiz-opts">'+order.map((o,k)=>{
+        let cls='quiz-btn';
+        if(isAns){
+          if(order[k].ix===q.ans)cls+=' correct';
+          else if(k===hist.chosen)cls+=' wrong';
+        }
+        return'<button class="'+cls+'" data-k="'+k+'"'+(isAns?' disabled':'')+'>'+o.t+'</button>';
+      }).join('')+'</div>'+
+      '<div class="quiz-ft">'+(isAns?'<div class="quiz-exp '+(hist.right?'ok':'no')+'"><strong>'+(hist.right?'Esatto.':'Non è corretto.')+'</strong> '+q.exp+'</div>':'')+'</div>'+
+      '<div class="quiz-nav">'+
+        '<button class="btn-back"'+(i===0?' disabled':'')+'>← Indietro</button>'+
+        (!isAns?'':'<button class="btn btn-primary quiz-next">'+(i<data.length-1?'Avanti':'Vedi il risultato')+'</button>')+
+      '</div>';
+    if(!isAns){
+      el.querySelectorAll('.quiz-btn').forEach(b=>b.addEventListener('click',()=>answer(+b.dataset.k)));
+    }else{
+      const nxt=el.querySelector('.quiz-next');
+      if(nxt)nxt.addEventListener('click',()=>{i++;if(i<data.length)qHTML();else end();});
+    }
+    el.querySelector('.btn-back').addEventListener('click',()=>{if(i>0){i--;qHTML();}});
+  }
+  function answer(k){
+    ensureOrder(i);
+    const q=data[i],order=orders[i],right=order[k].ix===q.ans;
+    if(right)score++;
+    history[i]={chosen:k,right};
+    el.querySelectorAll('.quiz-btn').forEach((b,j)=>{
+      b.disabled=true;
+      if(order[j].ix===q.ans)b.classList.add('correct');
+      else if(j===k)b.classList.add('wrong');
+    });
+    el.querySelector('.quiz-hd .score').textContent='Punteggio: '+score;
+    el.querySelector('.quiz-bar i').style.width=((i+1)/data.length*100)+'%';
+    el.querySelector('.quiz-ft').innerHTML='<div class="quiz-exp '+(right?'ok':'no')+'"><strong>'+(right?'Esatto.':'Non è corretto.')+'</strong> '+q.exp+'</div>';
+    const nav=el.querySelector('.quiz-nav');
+    const nextBtn=document.createElement('button');
+    nextBtn.className='btn btn-primary quiz-next';
+    nextBtn.textContent=i<data.length-1?'Avanti':'Vedi il risultato';
+    nextBtn.addEventListener('click',()=>{i++;if(i<data.length)qHTML();else end();});
+    nav.appendChild(nextBtn);
+  }
+  function end(){
+    const errors=history.map((h,idx)=>h&&!h.right?{q:data[idx].q,exp:data[idx].exp}:null).filter(Boolean);
+    const soglia=Math.round(data.length*0.9);
+    const msg=score>=soglia?'Eccellente: padroneggi l’argomento.':
+      score>=data.length*0.7?'Molto bene: ancora un piccolo sforzo.':
+      score>=data.length*0.5?'Sufficiente: rileggi le spiegazioni degli errori e riprova.':
+      'Riparti dalla teoria e dalla simulazione, poi riprova il quiz.';
+    let errHtml='';
+    if(errors.length){
+      errHtml='<div class="quiz-errors"><p class="quiz-err-hd">Da rivedere:</p>'+
+        errors.map(e=>'<div class="err-item"><div class="err-q">'+e.q+'</div><div class="err-exp">'+e.exp+'</div></div>').join('')+'</div>';
+    }
+    el.innerHTML='<div class="quiz-end"><div class="big">'+score+' / '+data.length+'</div><p>'+msg+'</p>'+errHtml+
+      '<button class="btn btn-primary" style="margin-top:.7rem">Ricomincia</button></div>';
+    el.querySelector('.btn.btn-primary').addEventListener('click',()=>{
+      history.fill(null);orders.fill(null);i=0;score=0;qHTML();
+    });
+  }
+  qHTML();
+}
+
+/* ---------------- Diagramma a frecce (SVG) ---------------- */
+const SVGNS='http://www.w3.org/2000/svg';
+function svgEl(name,attrs){
+  const e=document.createElementNS(SVGNS,name);
+  for(const k in attrs)e.setAttribute(k,attrs[k]);
+  return e;
+}
+const LBLA=['1','2','3','4','5'],LBLB=['a','b','c','d','e'];
+function drawDiagram(svg,nA,nB,edges){
+  while(svg.firstChild)svg.removeChild(svg.firstChild);
+  const W=460,H=280,xA=120,xB=340,rad=17;
+  const posY=(n,i)=>{const gap=H/(n+1);return gap*(i+1)};
+  // etichette insiemi
+  svg.appendChild(svgEl('text',{x:xA,y:24,'text-anchor':'middle','font-size':16,'font-weight':700,fill:'#1d4e89','font-family':'Fraunces,serif'})).textContent='A (dominio)';
+  svg.appendChild(svgEl('text',{x:xB,y:24,'text-anchor':'middle','font-size':16,'font-weight':700,fill:'#b45309','font-family':'Fraunces,serif'})).textContent='B (codominio)';
+  // frecce
+  edges.forEach(([i,j])=>{
+    const x1=xA+rad,y1=posY(nA,i),x2=xB-rad,y2=posY(nB,j);
+    const ang=Math.atan2(y2-y1,x2-x1);
+    const line=svgEl('line',{x1,y1,x2,y2,stroke:'#6b7280','stroke-width':2.2});
+    svg.appendChild(line);
+    const ah=9;
+    const p=svgEl('path',{d:'M'+x2+','+y2+' L'+(x2-ah*Math.cos(ang-0.4))+','+(y2-ah*Math.sin(ang-0.4))+' L'+(x2-ah*Math.cos(ang+0.4))+','+(y2-ah*Math.sin(ang+0.4))+' Z',fill:'#6b7280'});
+    svg.appendChild(p);
+  });
+  // nodi A
+  for(let i=0;i<nA;i++){
+    const y=posY(nA,i);
+    svg.appendChild(svgEl('circle',{cx:xA,cy:y,r:rad,fill:'#e7f0fa',stroke:'#2563eb','stroke-width':2.4}));
+    const t=svgEl('text',{x:xA,y:y+5,'text-anchor':'middle','font-size':15,'font-weight':700,fill:'#12314f','font-family':'JetBrains Mono,monospace'});
+    t.textContent=LBLA[i];svg.appendChild(t);
+  }
+  // nodi B
+  for(let j=0;j<nB;j++){
+    const y=posY(nB,j);
+    svg.appendChild(svgEl('circle',{cx:xB,cy:y,r:rad,fill:'#faf0e3',stroke:'#c9752a','stroke-width':2.4}));
+    const t=svgEl('text',{x:xB,y:y+5,'text-anchor':'middle','font-size':15,'font-weight':700,fill:'#7a4713','font-family':'JetBrains Mono,monospace'});
+    t.textContent=LBLB[j];svg.appendChild(t);
+  }
+}
+/* proprietà di una relazione A->B data da edges=[[i,j],...] */
+function analyze(nA,nB,edges){
+  const out=edges.map(e=>e[1]);
+  const srcCount=Array(nA).fill(0);edges.forEach(e=>srcCount[e[0]]++);
+  const isFunc=srcCount.every(c=>c===1);
+  const tgtCount=Array(nB).fill(0);edges.forEach(e=>tgtCount[e[1]]++);
+  const injective=isFunc&&tgtCount.every(c=>c<=1);
+  const surjective=isFunc&&tgtCount.every(c=>c>=1);
+  return{isFunc,injective,surjective,bijective:injective&&surjective,srcCount,tgtCount};
+}
+/* genera una funzione casuale A->B */
+function randFunc(nA,nB){
+  const edges=[];for(let i=0;i<nA;i++)edges.push([i,ri(nB)]);return edges;
+}
+/* genera una relazione che può NON essere funzione */
+function randRelation(nA,nB){
+  const edges=randFunc(nA,nB);
+  if(Math.random()<0.5){
+    // aggiunge una seconda freccia a un elemento (immagine non unica)
+    const a=ri(nA);const cur=edges.find(e=>e[0]===a)[1];
+    let b2=ri(nB);if(b2===cur)b2=(b2+1)%nB;edges.push([a,b2]);
+  }else{
+    // toglie una freccia (immagine mancante)
+    const a=ri(nA);const k=edges.findIndex(e=>e[0]===a);edges.splice(k,1);
+  }
+  return edges;
+}
+
+/* ---------------- Motore "Prova tu" ---------------- */
+function initPT(el,nextCase){
+  const svg=el.querySelector('svg.diagram');
+  const canvas=el.querySelector('canvas.plot');
+  const plot=new Plot(canvas);
+  const qEl=el.querySelector('.pt-q'),optsEl=el.querySelector('.pt-opts'),fbEl=el.querySelector('.pt-fb');
+  let current=null;
+  function drawCurrent(){
+    if(!current)return;
+    if(current.kind==='graph'||current.kind==='points'){
+      plot.fit();const v=current.view||[-6,6,-6,6];plot.view(v[0],v[1],v[2],v[3]);plot.axes();
+      if(current.kind==='graph'){
+        (current.branches||[current.fn]).forEach(f=>plot.plotFn(f,COLP,2.8));
+      }else{
+        current.pts.forEach(p=>plot.dot(p[0],p[1],COLP,5));
+      }
+    }
+  }
+  function render(){
+    current=nextCase();
+    const k=current.kind;
+    svg.hidden=k!=='arrow';
+    canvas.hidden=!(k==='graph'||k==='points');
+    if(k==='arrow')drawDiagram(svg,current.nA,current.nB,current.edges);
+    else if(k==='graph'||k==='points'){requestAnimationFrame(drawCurrent);}
+    qEl.textContent=current.q;
+    fbEl.innerHTML='';
+    optsEl.innerHTML=current.opts.map((o,idx)=>'<button class="quiz-btn" data-k="'+idx+'">'+o.t+'</button>').join('');
+    optsEl.querySelectorAll('.quiz-btn').forEach(b=>b.addEventListener('click',()=>choose(+b.dataset.k)));
+  }
+  function choose(idx){
+    const o=current.opts[idx];
+    optsEl.querySelectorAll('.quiz-btn').forEach((b,j)=>{
+      b.disabled=true;
+      if(current.opts[j].ok)b.classList.add('correct');
+      else if(j===idx)b.classList.add('wrong');
+    });
+    fbEl.innerHTML='<div class="quiz-exp '+(o.ok?'ok':'no')+'"><strong>'+(o.ok?'Esatto.':'Non è corretto.')+'</strong> '+current.exp+'</div>';
+  }
+  el.querySelector('.pt-new').addEventListener('click',render);
+  regSim(canvas,drawCurrent);
+  render();
+}
+</script>
+<script>
+/* ================================================================
+   DATI QUIZ — 6 sezioni × 10 + riepilogo × 20
+   {q, opts:[...], ans, exp}  (il motore mescola le opzioni)
+   ================================================================ */
+const QUIZZES={
+
+/* ---------- Che cos'è una funzione ---------- */
+fdef:[
+ {q:'Che cosa associa una funzione f : A → B?',
+  opts:['A ogni elemento di A uno e un solo elemento di B','A ogni elemento di B un elemento di A','Ad alcuni elementi di A più elementi di B','A ogni elemento di A almeno due elementi di B'],ans:0,
+  exp:'Per definizione una funzione associa a OGNI elemento del dominio UNO E UN SOLO elemento del codominio.'},
+ {q:'Come si chiama l’insieme di partenza A di una funzione f : A → B?',
+  opts:['Codominio','Immagine','Dominio','Controimmagine'],ans:2,
+  exp:'A è il dominio (dove la funzione è definita); B è il codominio.'},
+ {q:'L’insieme immagine Im(f) è:',
+  opts:['L’insieme di partenza','L’insieme dei valori di B effettivamente assunti da f','Sempre uguale al codominio','L’insieme degli x del dominio'],ans:1,
+  exp:'Im(f) = { f(x) : x ∈ A } è il sottoinsieme del codominio dei valori davvero raggiunti; può essere più piccolo di B.'},
+ {q:'Quale relazione è sempre vera?',
+  opts:['Im(f) = B','B ⊆ Im(f)','Im(f) ⊆ B','Im(f) e B sono disgiunti'],ans:2,
+  exp:'L’immagine è sempre contenuta nel codominio. L’uguaglianza Im(f) = B vale solo se f è suriettiva.'},
+ {q:'Il test della retta verticale dice che una curva è il grafico di una funzione se ogni retta verticale la incontra:',
+  opts:['In almeno due punti','Al più in un punto','In esattamente due punti','In infiniti punti'],ans:1,
+  exp:'Se una verticale toccasse la curva in due punti, a quell’ascissa corrisponderebbero due valori: non sarebbe una funzione.'},
+ {q:'La circonferenza di equazione x² + y² = 25 è il grafico di una funzione y = f(x)?',
+  opts:['Sì, sempre','No','Sì, solo per x > 0','Sì, solo per y > 0'],ans:1,
+  exp:'La verticale x = 0 la incontra in (0, 5) e (0, −5): due valori per la stessa x, quindi non è una funzione.'},
+ {q:'Una funzione ha f(1) = 5 e f(2) = 5. È ancora una funzione?',
+  opts:['No, due x non possono avere la stessa immagine','Sì: è l’unicità dell’immagine a contare, non la sua diversità','No, perché non è iniettiva','Solo se 1 = 2'],ans:1,
+  exp:'Nulla vieta che due elementi diversi abbiano la stessa immagine: è lecito. Vietato è che uno stesso x abbia due immagini.'},
+ {q:'Che cos’è una controimmagine di un valore y ∈ B?',
+  opts:['Il valore f(y)','Un elemento x del dominio tale che f(x) = y','Sempre un solo elemento','L’immagine di y'],ans:1,
+  exp:'Una controimmagine di y è un x del dominio la cui immagine è y. Può non esistere, essere unica o essere multipla.'},
+ {q:'Qual è il dominio naturale di f(x) = 1 / (x − 3)?',
+  opts:['ℝ','ℝ ∖ {3}','ℝ ∖ {0}','{3}'],ans:1,
+  exp:'Il denominatore si annulla per x = 3, dove la funzione non è definita: D = ℝ ∖ {3}.'},
+ {q:'Per f : {−1, 0, 2} → ℝ con f(x) = x², quanto vale l’immagine?',
+  opts:['{−1, 0, 2}','ℝ','{0, 1, 4}','{1, 4}'],ans:2,
+  exp:'f(−1)=1, f(0)=0, f(2)=4, quindi Im(f) = {0, 1, 4}.'}
+],
+
+/* ---------- Iniettività ---------- */
+iniet:[
+ {q:'Una funzione è iniettiva quando:',
+  opts:['A elementi distinti corrispondono immagini distinte','Ogni y del codominio è raggiunto','Il dominio è ℝ','Ha un solo zero'],ans:0,
+  exp:'Iniettiva: x₁ ≠ x₂ ⇒ f(x₁) ≠ f(x₂). Equivalente: f(x₁) = f(x₂) ⇒ x₁ = x₂.'},
+ {q:'Quale condizione equivale all’iniettività?',
+  opts:['f(x₁) = f(x₂) ⇒ x₁ = x₂','f(x₁) = f(x₂) per ogni x₁, x₂','x₁ = x₂ ⇒ f(x₁) = f(x₂)','Im(f) = B'],ans:0,
+  exp:'È la forma contronominale, la più comoda nelle verifiche: immagini uguali costringono gli ingressi a coincidere.'},
+ {q:'Il test della retta orizzontale: f è iniettiva se ogni retta orizzontale incontra il grafico:',
+  opts:['Almeno una volta','Al più una volta','Esattamente due volte','Mai'],ans:1,
+  exp:'Se una orizzontale y = k tocca il grafico in due punti, quei due x diversi hanno la stessa immagine k: non iniettiva.'},
+ {q:'La funzione f(x) = x² su ℝ è iniettiva?',
+  opts:['Sì','No, perché f(−a) = f(a)','Sì, solo per x < 0','Sì, perché è una parabola'],ans:1,
+  exp:'f(−2) = f(2) = 4: due ingressi distinti con la stessa immagine. Non è iniettiva su ℝ (lo diventa su [0, +∞)).'},
+ {q:'Quale di queste funzioni su ℝ è iniettiva?',
+  opts:['f(x) = x²','f(x) = |x|','f(x) = x³','f(x) = x² − 4'],ans:2,
+  exp:'x³ è strettamente crescente, quindi iniettiva. Le altre assumono lo stesso valore in punti simmetrici.'},
+ {q:'Una funzione strettamente crescente su tutto il dominio è:',
+  opts:['Sempre iniettiva','Mai iniettiva','Iniettiva solo se positiva','Suriettiva'],ans:0,
+  exp:'Se cresce senza mai tornare indietro non può assumere due volte lo stesso valore: è iniettiva.'},
+ {q:'f(x) = 3x − 5 su ℝ è iniettiva?',
+  opts:['No','Sì','Solo per x > 0','Solo nei numeri interi'],ans:1,
+  exp:'Da 3x₁ − 5 = 3x₂ − 5 segue x₁ = x₂: è iniettiva (ogni funzione lineare con coefficiente ≠ 0 lo è).'},
+ {q:'Restringendo il dominio di f(x) = x² a [0, +∞), la funzione diventa:',
+  opts:['Non definita','Iniettiva','Costante','Decrescente'],ans:1,
+  exp:'Su [0, +∞) è strettamente crescente, quindi iniettiva: x₁² = x₂² con x₁, x₂ ≥ 0 dà x₁ = x₂.'},
+ {q:'Se f non è iniettiva, allora esistono:',
+  opts:['Due x distinti con la stessa immagine','Due y senza controimmagine','Infinite soluzioni per ogni y','Un solo zero'],ans:0,
+  exp:'Negare l’iniettività significa trovare x₁ ≠ x₂ con f(x₁) = f(x₂).'},
+ {q:'La funzione f(x) = sin x su ℝ è iniettiva?',
+  opts:['Sì','No, è periodica e ripete i valori','Sì, solo valori positivi','Sì, perché limitata'],ans:1,
+  exp:'Essendo periodica assume lo stesso valore infinite volte (es. sin 0 = sin 2π = 0): non è iniettiva su ℝ.'}
+],
+
+/* ---------- Suriettività ---------- */
+suriet:[
+ {q:'Una funzione f : A → B è suriettiva quando:',
+  opts:['È crescente','Ogni y ∈ B è immagine di almeno un x ∈ A','Elementi distinti hanno immagini distinte','Il dominio è limitato'],ans:1,
+  exp:'Suriettiva: ∀ y ∈ B ∃ x ∈ A con f(x) = y. Equivale a Im(f) = B.'},
+ {q:'La suriettività equivale alla condizione:',
+  opts:['Im(f) ⊆ B','Im(f) = B','Im(f) = ∅','B ⊆ A'],ans:1,
+  exp:'È suriettiva se e solo se l’immagine riempie tutto il codominio: Im(f) = B.'},
+ {q:'La suriettività di una funzione:',
+  opts:['Non dipende dal codominio','Dipende dal codominio scelto','Dipende solo dal dominio','È sempre vera'],ans:1,
+  exp:'Cambiando il codominio la stessa legge può diventare suriettiva o no: dipende da quale B si fissa.'},
+ {q:'f : ℝ → ℝ, f(x) = x² è suriettiva?',
+  opts:['Sì','No: i valori negativi non sono raggiunti','Sì, solo per x > 0','Sì, perché continua'],ans:1,
+  exp:'Im(f) = [0, +∞) ≠ ℝ: nessun x dà un valore negativo, quindi non è suriettiva su ℝ.'},
+ {q:'Come si può rendere suriettiva la funzione f(x) = x²?',
+  opts:['Scegliendo come codominio [0, +∞)','Restringendo il dominio','Cambiando la formula','Non è possibile'],ans:0,
+  exp:'Scegliendo come codominio proprio l’immagine [0, +∞) si ottiene Im(f) = B: diventa suriettiva.'},
+ {q:'f : ℝ → ℝ, f(x) = x³ è suriettiva?',
+  opts:['No','Sì: ogni y reale ha la controimmagine ∛y','Solo per y > 0','Solo per y intero'],ans:1,
+  exp:'Per ogni y reale esiste x = ∛y con x³ = y: l’immagine è tutto ℝ.'},
+ {q:'f : ℝ → ℝ, f(x) = eˣ è suriettiva?',
+  opts:['Sì','No: l’immagine è (0, +∞)','Sì, solo valori negativi','Sì, perché crescente'],ans:1,
+  exp:'L’esponenziale assume solo valori positivi: Im(f) = (0, +∞) ≠ ℝ. Diventa suriettiva con codominio (0, +∞).'},
+ {q:'Per una funzione lineare f(x) = 2x + 1 : ℝ → ℝ, l’immagine è:',
+  opts:['[0, +∞)','ℝ','{1}','(0, +∞)'],ans:1,
+  exp:'Per ogni y, x = (y − 1)/2 risolve 2x + 1 = y: l’immagine è tutto ℝ, quindi è suriettiva.'},
+ {q:'Si può sempre rendere suriettiva una funzione scegliendo come codominio:',
+  opts:['Il dominio','L’insieme vuoto','La sua immagine Im(f)','ℝ'],ans:2,
+  exp:'Prendendo B = Im(f) si ha automaticamente Im(f) = B: ogni funzione diventa suriettiva sul proprio insieme immagine.'},
+ {q:'Se una funzione NON è suriettiva, allora:',
+  opts:['Esiste un y ∈ B senza controimmagine','Due x hanno la stessa immagine','Il dominio è vuoto','È decrescente'],ans:0,
+  exp:'Negare la suriettività significa trovare almeno un y del codominio che non è immagine di alcun x.'}
+],
+
+/* ---------- Biiettività ---------- */
+biiet:[
+ {q:'Una funzione è biiettiva quando è:',
+  opts:['Iniettiva e suriettiva insieme','Solo iniettiva','Solo suriettiva','Né iniettiva né suriettiva'],ans:0,
+  exp:'Biiettiva (biunivoca) = iniettiva E suriettiva contemporaneamente.'},
+ {q:'In una funzione biiettiva ogni elemento del codominio ha:',
+  opts:['Nessuna controimmagine','Esattamente una controimmagine','Almeno due controimmagini','Infinite controimmagini'],ans:1,
+  exp:'Suriettiva ⇒ almeno una; iniettiva ⇒ al più una; insieme ⇒ esattamente una controimmagine.'},
+ {q:'Una funzione è invertibile se e solo se è:',
+  opts:['Crescente','Continua','Biiettiva','Limitata'],ans:2,
+  exp:'L’inversa esiste esattamente quando f è biiettiva: iniettiva per l’unicità, suriettiva per essere definita su tutto B.'},
+ {q:'f : ℝ → ℝ, f(x) = 2x + 1 è biiettiva?',
+  opts:['No, solo iniettiva','No, solo suriettiva','Sì','No, nessuna delle due'],ans:2,
+  exp:'È iniettiva (lineare) e suriettiva (ogni y ha controimmagine): quindi biiettiva, dunque invertibile.'},
+ {q:'f : ℝ → ℝ, f(x) = x² è:',
+  opts:['Biiettiva','Né iniettiva né suriettiva','Solo iniettiva','Solo suriettiva'],ans:1,
+  exp:'Non iniettiva (f(−1)=f(1)) e non suriettiva (niente valori negativi): non ha nessuna delle due proprietà.'},
+ {q:'Se A e B sono finiti ed esiste una biiezione f : A → B, allora:',
+  opts:['A ha più elementi di B','A e B hanno lo stesso numero di elementi','B è vuoto','A ⊆ B'],ans:1,
+  exp:'Una corrispondenza biunivoca accoppia uno a uno gli elementi: i due insiemi finiti devono avere la stessa cardinalità.'},
+ {q:'f : ℝ → ℝ, f(x) = eˣ è biiettiva?',
+  opts:['Sì','No: è iniettiva ma non suriettiva su ℝ','No: è suriettiva ma non iniettiva','No: nessuna delle due'],ans:1,
+  exp:'eˣ è iniettiva (crescente) ma Im = (0, +∞) ≠ ℝ: non suriettiva su ℝ, quindi non biiettiva (lo è verso (0, +∞)).'},
+ {q:'Come rendere biiettiva f(x) = x²?',
+  opts:['Lasciarla su ℝ → ℝ','Restringere dominio a [0, ∞) e codominio a [0, ∞)','Cambiarla in x³','Non è possibile'],ans:1,
+  exp:'Su [0, +∞) diventa iniettiva; scegliendo [0, +∞) come codominio diventa suriettiva: quindi biiettiva.'},
+ {q:'f : ℝ → ℝ, f(x) = x³ è biiettiva?',
+  opts:['Sì','No, non iniettiva','No, non suriettiva','No, nessuna delle due'],ans:0,
+  exp:'x³ è strettamente crescente (iniettiva) e la sua immagine è tutto ℝ (suriettiva): è biiettiva.'},
+ {q:'Una funzione iniettiva ma non suriettiva (f : A → B):',
+  opts:['È biiettiva','Non è biiettiva','È suriettiva','È costante'],ans:1,
+  exp:'Per la biiettività servono entrambe le proprietà: manca la suriettività, quindi non è biiettiva (può diventarlo restringendo B all’immagine).'}
+],
+
+/* ---------- Composizione ---------- */
+comp:[
+ {q:'La funzione composta (g ∘ f)(x) è uguale a:',
+  opts:['f(g(x))','g(f(x))','f(x) · g(x)','g(x) − f(x)'],ans:1,
+  exp:'g ∘ f significa «prima f, poi g»: si applica f all’ingresso e il risultato a g, cioè g(f(x)).'},
+ {q:'Nella scrittura g ∘ f, quale funzione agisce per prima?',
+  opts:['g','f','Entrambe insieme','Dipende dal valore di x'],ans:1,
+  exp:'Si legge da destra a sinistra: f agisce per prima sull’ingresso, poi g sul risultato.'},
+ {q:'Con f(x) = 2x + 1 e g(x) = x², quanto vale (g ∘ f)(3)?',
+  opts:['19','49','13','37'],ans:1,
+  exp:'f(3) = 7, poi g(7) = 7² = 49.'},
+ {q:'Con f(x) = 2x + 1 e g(x) = x², quanto vale (f ∘ g)(3)?',
+  opts:['49','19','18','10'],ans:1,
+  exp:'g(3) = 9, poi f(9) = 2·9 + 1 = 19. Nota: 19 ≠ 49, l’ordine conta.'},
+ {q:'In generale la composizione di funzioni è:',
+  opts:['Sempre commutativa','Non commutativa (g ∘ f ≠ f ∘ g in generale)','Mai associativa','Sempre uguale al prodotto'],ans:1,
+  exp:'L’ordine conta: in genere g ∘ f e f ∘ g sono funzioni diverse. È però associativa.'},
+ {q:'Con f(x) = x + 1 e g(x) = x², l’espressione di (g ∘ f)(x) è:',
+  opts:['x² + 1','(x + 1)²','x² + x','2x + 1'],ans:1,
+  exp:'(g ∘ f)(x) = g(x + 1) = (x + 1)². Diversa da (f ∘ g)(x) = x² + 1.'},
+ {q:'La funzione identità id(x) = x rispetto alla composizione è:',
+  opts:['L’elemento neutro (f ∘ id = f)','Sempre nulla','L’inversa di ogni funzione','Non componibile'],ans:0,
+  exp:'Comporre con l’identità non cambia nulla: f ∘ id = id ∘ f = f.'},
+ {q:'Perché (g ∘ f) sia definita occorre che:',
+  opts:['f e g abbiano lo stesso grafico','le immagini di f siano accettabili come ingressi di g','g sia iniettiva','f sia costante'],ans:1,
+  exp:'Serve Im(f) contenuta nel dominio di g, così g può ricevere i valori prodotti da f.'},
+ {q:'Con f(x) = x − 1 e g(x) = √x, il dominio di (g ∘ f)(x) = √(x − 1) è:',
+  opts:['ℝ','x ≥ 1','x ≥ 0','x ≤ 1'],ans:1,
+  exp:'La radice richiede argomento ≥ 0: x − 1 ≥ 0, cioè x ≥ 1.'},
+ {q:'Componendo una funzione con la propria inversa si ottiene:',
+  opts:['La funzione nulla','La funzione identità','Il doppio della funzione','Una funzione costante'],ans:1,
+  exp:'f⁻¹ ∘ f = id e f ∘ f⁻¹ = id: l’inversa «annulla» l’effetto di f.'}
+],
+
+/* ---------- Funzione inversa ---------- */
+inv:[
+ {q:'La funzione inversa f⁻¹ di f : A → B esiste se e solo se f è:',
+  opts:['Crescente','Biiettiva','Continua','Positiva'],ans:1,
+  exp:'Solo una funzione biiettiva è invertibile: iniettiva (inversa ben definita) e suriettiva (definita su tutto B).'},
+ {q:'Il simbolo f⁻¹(x) indica:',
+  opts:['Il reciproco 1/f(x)','La funzione inversa','La derivata di f','f(x) cambiato di segno'],ans:1,
+  exp:'f⁻¹ è la funzione inversa, da non confondere con il reciproco 1/f(x).'},
+ {q:'Quale uguaglianza caratterizza la funzione inversa?',
+  opts:['f⁻¹(f(x)) = x','f⁻¹(x) = 1/f(x)','f⁻¹(x) = −f(x)','f⁻¹(x) = f(x)'],ans:0,
+  exp:'Inversa e funzione si annullano a vicenda: f⁻¹(f(x)) = x e f(f⁻¹(y)) = y.'},
+ {q:'I grafici di f e di f⁻¹ sono simmetrici rispetto alla retta:',
+  opts:['y = 0 (asse x)','x = 0 (asse y)','y = x','y = −x'],ans:2,
+  exp:'Scambiando ascisse e ordinate, il punto (a, b) diventa (b, a): è la simmetria rispetto alla bisettrice y = x.'},
+ {q:'L’inversa di f(x) = 2x + 1 è:',
+  opts:['f⁻¹(x) = (x − 1)/2','f⁻¹(x) = 2x − 1','f⁻¹(x) = 1/(2x + 1)','f⁻¹(x) = (x + 1)/2'],ans:0,
+  exp:'Da y = 2x + 1 si ricava x = (y − 1)/2; scambiando le variabili f⁻¹(x) = (x − 1)/2.'},
+ {q:'L’inversa di f(x) = x³ è:',
+  opts:['f⁻¹(x) = x²','f⁻¹(x) = ∛x','f⁻¹(x) = 3x','f⁻¹(x) = 1/x³'],ans:1,
+  exp:'Da y = x³ si ha x = ∛y: f⁻¹(x) = ∛x. (x³ è biiettiva su ℝ.)'},
+ {q:'Perché f(x) = x² su ℝ non è invertibile?',
+  opts:['Perché è continua','Perché non è iniettiva','Perché è sempre positiva','Perché non è una funzione'],ans:1,
+  exp:'f(−3) = f(3) = 9: tornando indietro da 9 non si sa scegliere tra −3 e 3. Serve restringere il dominio.'},
+ {q:'Per ottenere l’espressione di f⁻¹ si procede così:',
+  opts:['Si deriva f','Si pone y = f(x), si risolve rispetto a x e si scambiano le variabili','Si calcola 1/f(x)','Si cambia segno a f'],ans:1,
+  exp:'Si scrive y = f(x), si isola x in funzione di y e infine si scambiano i nomi delle variabili.'},
+ {q:'L’inversa di una funzione crescente è:',
+  opts:['Decrescente','Ancora crescente','Costante','Non esiste'],ans:1,
+  exp:'La riflessione rispetto a y = x conserva il verso di crescita: l’inversa di una crescente è crescente.'},
+ {q:'Se f(2) = 7 e f è invertibile, allora f⁻¹(7) vale:',
+  opts:['2','1/7','7','−2'],ans:0,
+  exp:'f⁻¹ «torna indietro»: poiché f(2) = 7, si ha f⁻¹(7) = 2.'}
+],
+
+/* ---------- Quiz riepilogativo (20) ---------- */
+ripasso:[
+ {q:'Una legge che a ogni x ∈ A associa uno e un solo y ∈ B è:',
+  opts:['Una relazione qualsiasi','Una funzione','Sempre una biiezione','Un’equazione'],ans:1,
+  exp:'È proprio la definizione di funzione: esistenza e unicità dell’immagine per ogni elemento del dominio.'},
+ {q:'Im(f) ⊆ B. L’uguaglianza Im(f) = B significa che f è:',
+  opts:['Iniettiva','Suriettiva','Costante','Dispari'],ans:1,
+  exp:'Suriettiva ⇔ l’immagine coincide con il codominio.'},
+ {q:'Il test della retta verticale serve a stabilire se una curva:',
+  opts:['È iniettiva','È il grafico di una funzione','È suriettiva','È invertibile'],ans:1,
+  exp:'Verticale: funzione sì/no. Orizzontale: iniettività.'},
+ {q:'Il test della retta orizzontale serve a stabilire se una funzione è:',
+  opts:['Definita','Iniettiva','Pari','Continua'],ans:1,
+  exp:'Se ogni orizzontale incontra il grafico al più una volta, la funzione è iniettiva.'},
+ {q:'f(x) = x² su ℝ è iniettiva?',
+  opts:['Sì','No','Solo per x > 0','Solo per x intero'],ans:1,
+  exp:'f(−a) = f(a): non iniettiva su ℝ.'},
+ {q:'f : ℝ → ℝ, f(x) = x³ è:',
+  opts:['Non iniettiva','Biiettiva','Non suriettiva','Costante'],ans:1,
+  exp:'Strettamente crescente (iniettiva) e con immagine ℝ (suriettiva): biiettiva.'},
+ {q:'f : ℝ → ℝ, f(x) = eˣ è:',
+  opts:['Suriettiva','Iniettiva ma non suriettiva su ℝ','Biiettiva su ℝ','Non iniettiva'],ans:1,
+  exp:'Iniettiva (crescente) ma Im = (0, +∞) ≠ ℝ: non suriettiva su ℝ.'},
+ {q:'Condizione necessaria e sufficiente per l’esistenza dell’inversa:',
+  opts:['f crescente','f biiettiva','f continua','f positiva'],ans:1,
+  exp:'f invertibile ⇔ f biiettiva.'},
+ {q:'(g ∘ f)(x) è per definizione:',
+  opts:['g(f(x))','f(g(x))','f(x)·g(x)','g(x)+f(x)'],ans:0,
+  exp:'Prima f, poi g: g(f(x)).'},
+ {q:'Con f(x) = x + 2 e g(x) = 3x, (g ∘ f)(x) =',
+  opts:['3x + 2','3x + 6','x + 6','3(x + 6)'],ans:1,
+  exp:'g(f(x)) = g(x + 2) = 3(x + 2) = 3x + 6.'},
+ {q:'Con f(x) = x + 2 e g(x) = 3x, (f ∘ g)(x) =',
+  opts:['3x + 6','3x + 2','x + 2','3x'],ans:1,
+  exp:'f(g(x)) = f(3x) = 3x + 2. Diversa da g ∘ f: l’ordine conta.'},
+ {q:'I grafici di f e f⁻¹ sono simmetrici rispetto a:',
+  opts:['y = x','y = 0','x = 0','y = −x'],ans:0,
+  exp:'Scambio ascisse/ordinate: simmetria rispetto alla bisettrice y = x.'},
+ {q:'L’inversa di f(x) = 2x + 1 è:',
+  opts:['(x − 1)/2','2x − 1','1/(2x + 1)','(x + 1)/2'],ans:0,
+  exp:'y = 2x + 1 ⇒ x = (y − 1)/2 ⇒ f⁻¹(x) = (x − 1)/2.'},
+ {q:'Il dominio naturale di f(x) = √(x − 4) è:',
+  opts:['ℝ','x ≥ 4','x ≤ 4','x ≥ 0'],ans:1,
+  exp:'Radice di indice pari: argomento ≥ 0, cioè x − 4 ≥ 0 → x ≥ 4.'},
+ {q:'In una biiezione tra insiemi finiti A e B:',
+  opts:['A ha più elementi','Hanno lo stesso numero di elementi','B è vuoto','A ⊂ B stretto'],ans:1,
+  exp:'La corrispondenza biunivoca accoppia uno a uno: stessa cardinalità.'},
+ {q:'Se f⁻¹(5) = 2 e f è invertibile, allora f(2) =',
+  opts:['5','1/5','2','−5'],ans:0,
+  exp:'Inversa: f⁻¹(5) = 2 significa f(2) = 5.'},
+ {q:'Una funzione strettamente monotòna è sempre:',
+  opts:['Suriettiva','Iniettiva','Biiettiva','Costante'],ans:1,
+  exp:'Crescendo (o decrescendo) senza tornare indietro non ripete i valori: iniettiva.'},
+ {q:'Per rendere f(x) = x² biiettiva si può:',
+  opts:['Lasciarla su ℝ → ℝ','Restringere a [0, ∞) → [0, ∞)','Sostituirla con x³','Nulla, è impossibile'],ans:1,
+  exp:'Su [0, +∞) è iniettiva; con codominio [0, +∞) è suriettiva: biiettiva.'},
+ {q:'La composizione di una funzione con la sua inversa dà:',
+  opts:['La funzione nulla','L’identità','Una costante','Il reciproco'],ans:1,
+  exp:'f⁻¹ ∘ f = id e f ∘ f⁻¹ = id.'},
+ {q:'f : ℝ → ℝ, f(x) = x² è suriettiva?',
+  opts:['Sì','No, l’immagine è [0, ∞)','Sì, solo valori negativi','Sì, perché continua'],ans:1,
+  exp:'Im = [0, +∞) ≠ ℝ: i valori negativi non sono raggiunti, quindi non suriettiva su ℝ.'}
+]
+};
+$$('.quiz[data-quiz]').forEach(el=>{try{initQuiz(el)}catch(e){console.error('initQuiz',el.dataset.quiz,e)}});
+</script>
+<script>
+'use strict';
+/* ================================================================
+   Simulazioni, "Prova tu" e avvio
+   ================================================================ */
+function banner(sel,cls,txt){const e=$(sel);if(!e)return;e.className='case-banner '+cls;e.innerHTML=txt;}
+function readItem(l,v){return'<div class="it"><span class="l">'+l+'</span><span class="v">'+v+'</span></div>';}
+
+/* dizionario di funzioni per la composizione */
+const FN={
+ '2x+1':{f:x=>2*x+1,t:'2x + 1'},
+ 'x-3':{f:x=>x-3,t:'x − 3'},
+ 'x/2':{f:x=>x/2,t:'x / 2'},
+ 'x^2':{f:x=>x*x,t:'x²'},
+ '-x':{f:x=>-x,t:'−x'},
+ 'x+1':{f:x=>x+1,t:'x + 1'}
+};
+function round2(x){return Math.round(x*100)/100}
+function fmtNum(x){if(!isFinite(x))return'non definito';const r=round2(x);return(Number.isInteger(r)?fmtInt(r):fmt(r,2));}
+function makeNumOpts(correct,cands){
+  const seen=new Set([round2(correct)]);const arr=[{v:correct,ok:true}];
+  const extra=cands.concat([correct+1,correct-1,correct+2,2*correct,correct-2,0]);
+  for(const c of extra){if(arr.length>=4)break;const r=round2(c);if(isFinite(c)&&!seen.has(r)){seen.add(r);arr.push({v:c,ok:false});}}
+  return shuffled(arr).map(o=>({t:fmtNum(o.v),ok:o.ok}));
+}
+
+/* ================= fdef · test retta verticale ================= */
+(function(){
+  const REL={
+    line:{view:[-7,7,-7,7],br:[x=>x/2+1],isFunc:true},
+    parab:{view:[-7,7,-7,10],br:[x=>x*x-3],isFunc:true},
+    cubic:{view:[-7,7,-7,7],br:[x=>x*x*x/6],isFunc:true},
+    circle:{view:[-8,8,-8,8],br:[x=>Math.sqrt(36-x*x),x=>-Math.sqrt(36-x*x)],isFunc:false},
+    sidep:{view:[-6,10,-6,6],br:[x=>Math.sqrt(x+4),x=>-Math.sqrt(x+4)],isFunc:false}
+  };
+  const plot=new Plot($('#vlPlot'));
+  function cfg(){return REL[$('#vlSel').value]}
+  function draw(){
+    const c=cfg(),v=c.view,k=+$('#vlX').value;
+    plot.fit();plot.view(v[0],v[1],v[2],v[3]);plot.axes();
+    c.br.forEach(f=>plot.plotFn(f,COLP,2.8));
+    plot.vline(k,COLA,[6,5]);
+    c.br.forEach(f=>{const y=f(k);if(isFinite(y)&&y>=v[2]&&y<=v[3])plot.dot(k,y,COLS,5);});
+  }
+  function update(){
+    const c=cfg(),k=+$('#vlX').value;
+    $('#vlXv').textContent=fmt(k,1);
+    const n=c.br.map(f=>f(k)).filter(y=>isFinite(y)).length;
+    if(c.isFunc)banner('#vlVerdict','c2','È una funzione: ogni verticale incontra la curva al più in un punto.');
+    else banner('#vlVerdict','c1','Non è una funzione: esiste una verticale che la incontra in due punti.');
+    $('#vlInfo').innerHTML=readItem('Intersezioni con x = '+fmt(k,1),n)+
+      readItem('Verdetto',c.isFunc?'funzione':'non funzione');
+    if($('#vlPlot').offsetParent!==null)draw();
+  }
+  $('#vlSel').addEventListener('change',update);
+  $('#vlX').addEventListener('input',update);
+  regSim($('#vlPlot'),draw);update();
+})();
+
+/* ================= fdef · diagramma a frecce ================= */
+(function(){
+  const svg=$('#adFun');
+  function nw(){
+    const nA=3+ri(2),nB=3+ri(2),edges=randRelation(nA,nB),a=analyze(nA,nB,edges);
+    drawDiagram(svg,nA,nB,edges);
+    if(a.isFunc)banner('#adFunV','c2','È una funzione.');
+    else banner('#adFunV','c1','Non è una funzione.');
+    $('#adFunWhy').textContent=a.isFunc
+      ?'Da ogni elemento di A parte esattamente una freccia.'
+      :'C’è un elemento di A da cui partono due frecce oppure nessuna: l’immagine non è unica o non esiste.';
+  }
+  $('#adFunNew').addEventListener('click',nw);nw();
+})();
+
+/* ================= iniet · test retta orizzontale ================= */
+(function(){
+  const F={
+    line:{view:[-7,7,-7,7],f:x=>x/2+1,inj:true},
+    cubic:{view:[-7,7,-7,7],f:x=>x*x*x/6,inj:true},
+    parab:{view:[-7,7,-4,10],f:x=>x*x-3,inj:false},
+    abs:{view:[-7,7,-4,8],f:x=>Math.abs(x)-2,inj:false},
+    sin:{view:[-7,7,-5,5],f:x=>3*Math.sin(x),inj:false}
+  };
+  const plot=new Plot($('#hlPlot'));
+  function cfg(){return F[$('#hlSel').value]}
+  function draw(){
+    const c=cfg(),v=c.view,k=+$('#hlY').value;
+    plot.fit();plot.view(v[0],v[1],v[2],v[3]);plot.axes();
+    plot.plotFn(c.f,COLP,2.8);
+    plot.hline(k,COLA,[6,5]);
+    solveEq(c.f,k,v[0],v[1]).forEach(x=>plot.dot(x,k,COLS,5));
+  }
+  function update(){
+    const c=cfg(),v=c.view,k=+$('#hlY').value;
+    $('#hlYv').textContent=fmt(k,1);
+    const n=solveEq(c.f,k,v[0],v[1]).length;
+    if(c.inj)banner('#hlVerdict','c2','Iniettiva: ogni retta orizzontale incontra il grafico al più una volta.');
+    else banner('#hlVerdict','c1','Non iniettiva: esiste una retta orizzontale che la incontra in due o più punti.');
+    $('#hlInfo').innerHTML=readItem('Intersezioni con y = '+fmt(k,1),n)+
+      readItem('Verdetto',c.inj?'iniettiva':'non iniettiva');
+    if($('#hlPlot').offsetParent!==null)draw();
+  }
+  $('#hlSel').addEventListener('change',update);
+  $('#hlY').addEventListener('input',update);
+  regSim($('#hlPlot'),draw);update();
+})();
+
+/* ================= iniet · diagramma a frecce ================= */
+(function(){
+  const svg=$('#adInj');
+  function nw(){
+    const nA=3,nB=4,edges=randFunc(nA,nB),a=analyze(nA,nB,edges);
+    drawDiagram(svg,nA,nB,edges);
+    if(a.injective)banner('#adInjV','c2','Iniettiva.');
+    else banner('#adInjV','c1','Non iniettiva.');
+    $('#adInjWhy').textContent=a.injective
+      ?'In ogni elemento di B arriva al più una freccia.'
+      :'Due elementi di A puntano allo stesso elemento di B: stessa immagine per ingressi diversi.';
+  }
+  $('#adInjNew').addEventListener('click',nw);nw();
+})();
+
+/* ================= suriet · immagine e codominio ================= */
+(function(){
+  const F={
+    lin:{view:[-7,7,-7,7],f:x=>2*x+1,im:[-99,99],B:[-99,99],surj:true,imTxt:'ℝ',bTxt:'ℝ'},
+    sqR:{view:[-6,6,-3,12],f:x=>x*x,im:[0,99],B:[-99,99],surj:false,imTxt:'[0, +∞)',bTxt:'ℝ'},
+    sqPos:{view:[-6,6,-3,12],f:x=>x*x,im:[0,99],B:[0,99],surj:true,imTxt:'[0, +∞)',bTxt:'[0, +∞)'},
+    expR:{view:[-4,4,-2,12],f:x=>Math.exp(x),im:[0,99],B:[-99,99],surj:false,imTxt:'(0, +∞)',bTxt:'ℝ'},
+    cube:{view:[-3,3,-12,12],f:x=>x*x*x,im:[-99,99],B:[-99,99],surj:true,imTxt:'ℝ',bTxt:'ℝ'}
+  };
+  const plot=new Plot($('#suPlot'));
+  function cfg(){return F[$('#suSel').value]}
+  function draw(){
+    const c=cfg(),v=c.view,k=+$('#suY').value;
+    plot.fit();plot.view(v[0],v[1],v[2],v[3]);plot.axes();
+    plot.imageBar(Math.max(v[2],c.im[0]),Math.min(v[3],c.im[1]),COLS);
+    plot.plotFn(c.f,COLP,2.8);
+    plot.hline(k,COLA,[6,5]);
+    solveEq(c.f,k,v[0],v[1]).forEach(x=>plot.dot(x,k,COLS,5));
+  }
+  function update(){
+    const c=cfg(),v=c.view,k=+$('#suY').value;
+    $('#suYv').textContent=fmt(k,1);
+    const inB=k>=c.B[0]&&k<=c.B[1];
+    const pre=solveEq(c.f,k,v[0]-3,v[1]+3).length;
+    if(c.surj)banner('#suVerdict','c2','Suriettiva: l’immagine riempie tutto il codominio B.');
+    else banner('#suVerdict','c1','Non suriettiva: l’immagine è più piccola del codominio B.');
+    $('#suInfo').innerHTML=readItem('Immagine Im(f)',c.imTxt)+readItem('Codominio B',c.bTxt)+
+      readItem('y = '+fmt(k,1)+' ∈ B ?',inB?'sì':'no')+
+      readItem('controimmagini di y',pre);
+    if($('#suPlot').offsetParent!==null)draw();
+  }
+  $('#suSel').addEventListener('change',update);
+  $('#suY').addEventListener('input',update);
+  regSim($('#suPlot'),draw);update();
+})();
+
+/* ================= suriet · diagramma a frecce ================= */
+(function(){
+  const svg=$('#adSur');
+  function nw(){
+    const nA=4,nB=3,edges=randFunc(nA,nB),a=analyze(nA,nB,edges);
+    drawDiagram(svg,nA,nB,edges);
+    if(a.surjective)banner('#adSurV','c2','Suriettiva.');
+    else banner('#adSurV','c1','Non suriettiva.');
+    $('#adSurWhy').textContent=a.surjective
+      ?'In ogni elemento di B arriva almeno una freccia: Im(f) = B.'
+      :'C’è un elemento di B in cui non arriva alcuna freccia: non è raggiunto.';
+  }
+  $('#adSurNew').addEventListener('click',nw);nw();
+})();
+
+/* ================= biiet · iniettiva+suriettiva ================= */
+(function(){
+  const F={
+    lin:{view:[-6,6,-6,6],f:x=>2*x+1,dom:[-6,6],inj:true,surj:true},
+    sqR:{view:[-5,5,-2,12],f:x=>x*x,dom:[-5,5],inj:false,surj:false},
+    sqPos:{view:[-1,6,-1,12],f:x=>x*x,dom:[0,6],inj:true,surj:true},
+    exp:{view:[-4,4,-1,12],f:x=>Math.exp(x),dom:[-4,4],inj:true,surj:false},
+    expPos:{view:[-4,4,-1,12],f:x=>Math.exp(x),dom:[-4,4],inj:true,surj:true},
+    cube:{view:[-3,3,-12,12],f:x=>x*x*x,dom:[-3,3],inj:true,surj:true}
+  };
+  const plot=new Plot($('#biPlot'));
+  function cfg(){return F[$('#biSel').value]}
+  function draw(){
+    const c=cfg(),v=c.view;
+    plot.fit();plot.view(v[0],v[1],v[2],v[3]);plot.axes();
+    const fm=x=>(x>=c.dom[0]&&x<=c.dom[1])?c.f(x):NaN;
+    plot.plotFn(fm,COLP,3);
+  }
+  function update(){
+    const c=cfg();const bi=c.inj&&c.surj;
+    banner('#biInj',c.inj?'c2':'c1','Iniettiva: '+(c.inj?'sì ✓':'no ✗'));
+    banner('#biSur',c.surj?'c2':'c1','Suriettiva: '+(c.surj?'sì ✓':'no ✗'));
+    banner('#biBi',bi?'c2':'c1','Biiettiva: '+(bi?'sì ✓ (invertibile)':'no ✗'));
+    $('#biWhy').textContent=bi
+      ?'Essendo iniettiva e suriettiva, è una corrispondenza biunivoca: ammette funzione inversa.'
+      :(!c.inj?'Non è iniettiva (una retta orizzontale taglia il grafico più volte). '
+              :'È iniettiva ma ')+(!c.surj&&c.inj?'non è suriettiva sul codominio indicato.':(!c.inj&&!c.surj?'Inoltre non è suriettiva.':''));
+    if($('#biPlot').offsetParent!==null)draw();
+  }
+  $('#biSel').addEventListener('change',update);
+  regSim($('#biPlot'),draw);update();
+})();
+
+/* ================= biiet · diagramma a frecce ================= */
+(function(){
+  const svg=$('#adBi');
+  function nw(){
+    const n=3+ri(2),edges=randFunc(n,n),a=analyze(n,n,edges);
+    drawDiagram(svg,n,n,edges);
+    if(a.bijective)banner('#adBiV','c2','Biiettiva.');
+    else banner('#adBiV','c1',a.injective?'Iniettiva ma non suriettiva.':a.surjective?'Suriettiva ma non iniettiva.':'Né iniettiva né suriettiva.');
+    $('#adBiWhy').textContent=a.bijective
+      ?'In ogni elemento di B arriva esattamente una freccia: corrispondenza biunivoca.'
+      :'Per la biiettività occorre che ogni elemento di B riceva esattamente una freccia.';
+  }
+  $('#adBiNew').addEventListener('click',nw);nw();
+})();
+
+/* ================= comp · macchina composta ================= */
+(function(){
+  const plot=new Plot($('#compPlot'));
+  function get(){return{f:FN[$('#compF').value],g:FN[$('#compG').value],x:+$('#compX').value}}
+  function draw(){
+    const {f,g}=get();
+    plot.fit();plot.view(-5,5,-12,12);plot.axes();
+    plot.plotFn(f.f,COLP,2.4);
+    plot.plotFn(g.f,COLA,2.4);
+    const gof=x=>g.f(f.f(x));
+    plot.plotFn(gof,COLS,2.8);
+    const x=+$('#compX').value,y=gof(x);
+    if(isFinite(y)&&y>=-12&&y<=12)plot.point(x,y,COLS,'(g∘f)(x)');
+  }
+  function update(){
+    const {f,g,x}=get();
+    $('#compXv').textContent=fmt(x,1);
+    const fx=f.f(x),gof=g.f(fx),fog=f.f(g.f(x));
+    $('#compChain').innerHTML=
+      '<span class="box x">x = '+fmtNum(x)+'</span><span class="arr">→</span>'+
+      '<span class="box">f</span><span class="arr">→</span>'+
+      '<span class="box x">'+fmtNum(fx)+'</span><span class="arr">→</span>'+
+      '<span class="box g">g</span><span class="arr">→</span>'+
+      '<span class="box x">'+fmtNum(gof)+'</span>';
+    $('#compInfo').innerHTML=readItem('(g∘f)('+fmtNum(x)+')',fmtNum(gof))+readItem('(f∘g)('+fmtNum(x)+')',fmtNum(fog));
+    $('#compWhy').textContent=(Math.abs(gof-fog)<1e-9)
+      ?'In questo punto g∘f e f∘g coincidono, ma in generale sono funzioni diverse.'
+      :'g∘f e f∘g danno risultati diversi: l’ordine di composizione conta.';
+    if($('#compPlot').offsetParent!==null)draw();
+  }
+  $('#compF').addEventListener('change',update);
+  $('#compG').addEventListener('change',update);
+  $('#compX').addEventListener('input',update);
+  regSim($('#compPlot'),draw);update();
+})();
+
+/* ================= inv · riflessione rispetto a y=x ================= */
+(function(){
+  const F={
+    '2x+1':{f:x=>2*x+1,inv:x=>(x-1)/2,dom:[-4,4],formula:'f⁻¹(x) = (x − 1) / 2'},
+    'x^3':{f:x=>x*x*x,inv:x=>Math.cbrt(x),dom:[-4,4],formula:'f⁻¹(x) = ∛x'},
+    'exp':{f:x=>Math.exp(x),inv:x=>Math.log(x),dom:[-4,4],formula:'f⁻¹(x) = ln x'},
+    'x^2pos':{f:x=>x*x,inv:x=>Math.sqrt(x),dom:[0,4],formula:'f⁻¹(x) = √x   (x ≥ 0)'},
+    '1/x':{f:x=>1/x,inv:x=>1/x,dom:[-4,4],formula:'f⁻¹(x) = 1 / x'}
+  };
+  const plot=new Plot($('#invPlot'));
+  function cfg(){return F[$('#invF').value]}
+  function clampX(c,x){return Math.max(c.dom[0],Math.min(c.dom[1],x))}
+  function draw(){
+    const c=cfg();
+    plot.fit();plot.view(-5,5,-5,5);plot.axes();
+    plot.plotFn(x=>x,COLG,1.6,[6,5]);
+    const fm=x=>(x>=c.dom[0]&&x<=c.dom[1])?c.f(x):NaN;
+    plot.plotFn(fm,COLP,2.8);
+    plot.plotFn(c.inv,COLA,2.8);
+    const x=clampX(c,+$('#invX').value),y=c.f(x);
+    if(isFinite(y)){
+      if(y>=-5&&y<=5)plot.point(x,y,COLP,'(x, f(x))',8,-8);
+      if(x>=-5&&x<=5&&y>=-5&&y<=5)plot.point(y,x,COLA,'(f(x), x)',8,16);
+    }
+  }
+  function update(){
+    const c=cfg();let x=+$('#invX').value;
+    $('#invXv').textContent=fmt(x,1);
+    x=clampX(c,x);const y=c.f(x);
+    $('#invFormula').textContent=c.formula;
+    $('#invInfo').innerHTML=readItem('x',fmtNum(x))+readItem('f(x)',fmtNum(y))+
+      readItem('punto su f',' ('+fmtNum(x)+'; '+fmtNum(y)+')')+
+      readItem('riflesso su f⁻¹',' ('+fmtNum(y)+'; '+fmtNum(x)+')');
+    if($('#invPlot').offsetParent!==null)draw();
+  }
+  $('#invF').addEventListener('change',update);
+  $('#invX').addEventListener('input',update);
+  regSim($('#invPlot'),draw);update();
+})();
+
+/* ================= Prova tu · generatori ================= */
+function ptFdef(){
+  if(Math.random()<0.55){
+    const nA=3+ri(2),nB=3+ri(2),edges=randRelation(nA,nB),a=analyze(nA,nB,edges);
+    return{kind:'arrow',nA,nB,edges,
+      q:'Questo diagramma a frecce definisce una funzione da A a B?',
+      opts:[{t:'Sì, è una funzione',ok:a.isFunc},{t:'No, non è una funzione',ok:!a.isFunc}],
+      exp:a.isFunc?'Da ogni elemento di A parte esattamente una freccia: è una funzione.'
+        :'Esiste un elemento di A da cui partono due frecce oppure nessuna: l’immagine non è unica o non esiste, quindi non è una funzione.'};
+  }
+  const xs=shuffled([-4,-3,-2,-1,0,1,2,3,4]).slice(0,4);
+  const pts=xs.map(x=>[x,ri(9)-4]);
+  const notFunc=Math.random()<0.5;
+  if(notFunc){const x=pick(xs);const ex=pts.find(p=>p[0]===x)[1];let y2=ri(9)-4;if(y2===ex)y2=ex+2;pts.push([x,y2]);}
+  return{kind:'points',pts,view:[-6,6,-6,6],
+    q:'L’insieme di punti rappresenta il grafico di una funzione y = f(x)?',
+    opts:[{t:'Sì',ok:!notFunc},{t:'No',ok:notFunc}],
+    exp:notFunc?'Ci sono due punti con la stessa ascissa: una retta verticale li taglia entrambi, quindi non è una funzione.'
+      :'A ogni ascissa corrisponde un solo punto: supera il test della retta verticale.'};
+}
+const INJGRAPH=[
+ {f:x=>x/2+1,inj:true,name:'y = x/2 + 1'},
+ {f:x=>x*x*x/6,inj:true,name:'y = x³/6'},
+ {f:x=>2*x-1,inj:true,name:'y = 2x − 1'},
+ {f:x=>x*x-3,inj:false,name:'y = x² − 3'},
+ {f:x=>Math.abs(x)-2,inj:false,name:'y = |x| − 2'},
+ {f:x=>3*Math.sin(x),inj:false,name:'y = 3 sin x'}
+];
+function ptIniet(){
+  if(Math.random()<0.5){
+    const nA=3,nB=4,edges=randFunc(nA,nB),a=analyze(nA,nB,edges);
+    return{kind:'arrow',nA,nB,edges,
+      q:'La funzione A → B rappresentata è iniettiva?',
+      opts:[{t:'Sì, iniettiva',ok:a.injective},{t:'No, non iniettiva',ok:!a.injective}],
+      exp:a.injective?'In ogni elemento di B arriva al più una freccia: elementi distinti hanno immagini distinte.'
+        :'Due elementi di A puntano allo stesso elemento di B: stessa immagine per ingressi diversi.'};
+  }
+  const c=pick(INJGRAPH);
+  return{kind:'graph',branches:[c.f],view:[-7,7,-7,7],
+    q:'La funzione '+c.name+' (su ℝ) è iniettiva? Usa il test della retta orizzontale.',
+    opts:[{t:'Sì, iniettiva',ok:c.inj},{t:'No, non iniettiva',ok:!c.inj}],
+    exp:c.inj?'Ogni retta orizzontale la incontra al più una volta: è iniettiva.'
+      :'Esiste una retta orizzontale che la incontra in due o più punti: non è iniettiva.'};
+}
+const SURGRAPH=[
+ {f:x=>2*x+1,sur:true,name:'y = 2x + 1'},
+ {f:x=>x*x*x,sur:true,name:'y = x³'},
+ {f:x=>-x+2,sur:true,name:'y = −x + 2'},
+ {f:x=>x*x,sur:false,name:'y = x²'},
+ {f:x=>Math.exp(x),sur:false,name:'y = eˣ'},
+ {f:x=>Math.abs(x),sur:false,name:'y = |x|'}
+];
+function ptSuriet(){
+  if(Math.random()<0.5){
+    const nA=4,nB=3,edges=randFunc(nA,nB),a=analyze(nA,nB,edges);
+    return{kind:'arrow',nA,nB,edges,
+      q:'La funzione A → B rappresentata è suriettiva su B?',
+      opts:[{t:'Sì, suriettiva',ok:a.surjective},{t:'No, non suriettiva',ok:!a.surjective}],
+      exp:a.surjective?'In ogni elemento di B arriva almeno una freccia: Im(f) = B.'
+        :'C’è un elemento di B in cui non arriva alcuna freccia: non è raggiunto, quindi non suriettiva.'};
+  }
+  const c=pick(SURGRAPH);
+  return{kind:'graph',branches:[c.f],view:[-5,5,-9,9],
+    q:'La funzione '+c.name+' : ℝ → ℝ è suriettiva?',
+    opts:[{t:'Sì',ok:c.sur},{t:'No',ok:!c.sur}],
+    exp:c.sur?'Ogni quota y è raggiunta almeno una volta: l’immagine è tutto ℝ.'
+      :'Alcune quote y non sono mai raggiunte (l’immagine non è tutto ℝ): non suriettiva.'};
+}
+const CAT4=[['Iniettiva ma non suriettiva','inj'],['Suriettiva ma non iniettiva','sur'],['Biiettiva','bi'],['Né iniettiva né suriettiva','none']];
+function catOf(a){return a.bijective?'bi':a.injective?'inj':a.surjective?'sur':'none'}
+const BIGRAPH=[
+ {f:x=>2*x+1,cat:'bi',view:[-6,6,-6,6],name:'y = 2x + 1',exp:'Iniettiva e suriettiva su ℝ: biiettiva.'},
+ {f:x=>x*x*x,cat:'bi',view:[-3,3,-10,10],name:'y = x³',exp:'Crescente (iniettiva) e con immagine ℝ (suriettiva): biiettiva.'},
+ {f:x=>x*x,cat:'none',view:[-5,5,-2,12],name:'y = x²',exp:'Non iniettiva (simmetrica) e non suriettiva (solo y ≥ 0): nessuna delle due.'},
+ {f:x=>Math.exp(x),cat:'inj',view:[-4,4,-1,10],name:'y = eˣ',exp:'Iniettiva (crescente) ma immagine (0, +∞): non suriettiva su ℝ. Solo iniettiva.'},
+ {f:x=>x*x*x-3*x,cat:'sur',view:[-3,3,-6,6],name:'y = x³ − 3x',exp:'Immagine tutto ℝ (suriettiva) ma assume valori ripetuti (non iniettiva). Solo suriettiva.'}
+];
+function ptBiiet(){
+  if(Math.random()<0.5){
+    const n=3+ri(2),edges=randFunc(n,n),a=analyze(n,n,edges),cat=catOf(a);
+    return{kind:'arrow',nA:n,nB:n,edges,
+      q:'Classifica la funzione A → B rappresentata.',
+      opts:CAT4.map(([t,c])=>({t,ok:c===cat})),
+      exp:'Iniettiva: '+(a.injective?'sì':'no')+'; suriettiva: '+(a.surjective?'sì':'no')+'. '+
+        (cat==='bi'?'Entrambe ⇒ biiettiva.':cat==='inj'?'Solo iniettiva.':cat==='sur'?'Solo suriettiva.':'Nessuna delle due.')};
+  }
+  const g=pick(BIGRAPH);
+  return{kind:'graph',branches:[g.f],view:g.view,
+    q:'Classifica '+g.name+' : ℝ → ℝ.',
+    opts:CAT4.map(([t,c])=>({t,ok:c===g.cat})),exp:g.exp};
+}
+function ptComp(){
+  const fk=pick(['2x+1','x-3','x^2','-x','x+1']),gk=pick(['x^2','2x+1','x+1','-x']);
+  const f=FN[fk].f,g=FN[gk].f,x=ri(5)-1;
+  const gf=Math.random()<0.5;
+  const val=gf?g(f(x)):f(g(x)),other=gf?f(g(x)):g(f(x));
+  const qt=gf?'(g ∘ f)('+x+')':'(f ∘ g)('+x+')';
+  const inner=gf?f(x):g(x),outerName=gf?'g':'f';
+  return{kind:'text',
+    q:'Con f(x) = '+FN[fk].t+' e g(x) = '+FN[gk].t+', quanto vale '+qt+'?',
+    opts:makeNumOpts(val,[other,f(x)+g(x),-val]),
+    exp:qt+' = '+outerName+'('+fmtNum(inner)+') = '+fmtNum(val)+'. (Si applica prima la funzione interna.)'};
+}
+const INVCASES=[
+ {name:'f(x) = 3x',inv:'f⁻¹(x) = x/3',ds:['f⁻¹(x) = 3x','f⁻¹(x) = x − 3','f⁻¹(x) = 1/(3x)']},
+ {name:'f(x) = x + 5',inv:'f⁻¹(x) = x − 5',ds:['f⁻¹(x) = x + 5','f⁻¹(x) = 5 − x','f⁻¹(x) = 1/(x + 5)']},
+ {name:'f(x) = 2x − 4',inv:'f⁻¹(x) = (x + 4)/2',ds:['f⁻¹(x) = (x − 4)/2','f⁻¹(x) = 2x + 4','f⁻¹(x) = (4 − x)/2']},
+ {name:'f(x) = x³',inv:'f⁻¹(x) = ∛x',ds:['f⁻¹(x) = x²','f⁻¹(x) = 3x','f⁻¹(x) = 1/x³']},
+ {name:'f(x) = x/4',inv:'f⁻¹(x) = 4x',ds:['f⁻¹(x) = x/4','f⁻¹(x) = 4/x','f⁻¹(x) = −4x']}
+];
+function ptInv(){
+  if(Math.random()<0.6){
+    const c=pick(INVCASES);
+    return{kind:'text',q:'Qual è la funzione inversa di '+c.name+' ?',
+      opts:shuffled([{t:c.inv,ok:true}].concat(c.ds.map(d=>({t:d,ok:false})))),
+      exp:'Ponendo y = f(x), si risolve rispetto a x e si scambiano le variabili: '+c.inv+'.'};
+  }
+  const cs=[{nm:'f(x) = 2x + 1',f:x=>2*x+1},{nm:'f(x) = x + 4',f:x=>x+4},{nm:'f(x) = 3x',f:x=>3*x},{nm:'f(x) = x − 2',f:x=>x-2}];
+  const c=pick(cs),a=ri(6)-2,b=c.f(a);
+  return{kind:'text',q:'Se '+c.nm+' è invertibile e f('+a+') = '+fmtNum(b)+', quanto vale f⁻¹('+fmtNum(b)+')?',
+    opts:makeNumOpts(a,[b,-a,a+1]),
+    exp:'f⁻¹ «torna indietro»: poiché f('+a+') = '+fmtNum(b)+', si ha f⁻¹('+fmtNum(b)+') = '+a+'.'};
+}
+const PTGEN={fdef:ptFdef,iniet:ptIniet,suriet:ptSuriet,biiet:ptBiiet,comp:ptComp,inv:ptInv};
+$$('.pt').forEach(el=>{const g=PTGEN[el.dataset.pt];if(g){try{initPT(el,g)}catch(e){console.error('initPT',el.dataset.pt,e)}}});
+
+/* ================= Tema scuro / chiaro ================= */
+(function(){
+  const btn=document.getElementById('themeToggle');
+  const metaTheme=document.querySelector('meta[name="theme-color"]');
+  function applyTheme(dark){
+    document.documentElement.setAttribute('data-theme',dark?'dark':'light');
+    btn.setAttribute('aria-label',dark?'Attiva tema chiaro':'Attiva tema scuro');
+    if(metaTheme)metaTheme.setAttribute('content',dark?'#111827':'#f9fafb');
+  }
+  const stored=localStorage.getItem('theme'),prefersDark=matchMedia('(prefers-color-scheme:dark)').matches;
+  applyTheme(stored==='dark'||(stored===null&&prefersDark));
+  btn.addEventListener('click',function(){
+    const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+    applyTheme(!isDark);localStorage.setItem('theme',isDark?'light':'dark');
+  });
+})();
+
+/* ================= Avvio ================= */
+const initId=location.hash.slice(1);
+show(document.getElementById(initId)?initId:'home');
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+<script>
+document.addEventListener("DOMContentLoaded",function(){
+  if(window.renderMathInElement)renderMathInElement(document.body,{
+    delimiters:[{left:"$$",right:"$$",display:true},{left:"$",right:"$",display:false}],
+    throwOnError:false
+  });
+});
+</script>
+</body>
+</html>
